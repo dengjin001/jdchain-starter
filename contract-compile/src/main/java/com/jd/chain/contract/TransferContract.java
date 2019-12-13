@@ -17,4 +17,7 @@ public interface TransferContract {
 
     @ContractEvent(name = "readAll")
     String readAll(String address, String account);
+
+    @ContractEvent(name = "test")
+    String test();
 }

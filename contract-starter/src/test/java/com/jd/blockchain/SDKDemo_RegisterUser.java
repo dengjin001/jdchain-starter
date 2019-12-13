@@ -45,7 +45,7 @@ public class SDKDemo_RegisterUser extends SDK_Base_Demo {
 
         // 定义角色权限；
         txTemp.security().roles().configure(roleName).enable(LedgerPermission.APPROVE_TX)
-                .enable(LedgerPermission.REGISTER_USER).disable( LedgerPermission.REGISTER_DATA_ACCOUNT)
+                .enable(LedgerPermission.REGISTER_USER).enable( LedgerPermission.REGISTER_DATA_ACCOUNT)
                 .enable(LedgerPermission.WRITE_DATA_ACCOUNT)
                 .enable(TransactionPermission.DIRECT_OPERATION);
 
