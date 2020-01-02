@@ -24,24 +24,24 @@ public class SDKTest extends SDK_Base_Demo {
     private BlockchainKeypair existUser;
 
     @Before
-    public void setup(){
+    public void setup() {
         existUser = BlockchainKeyGenerator.getInstance().generate();
     }
 
     @Test
-    public void checkXml_existDataAcount(){
-        if(!isTest) return;
+    public void checkXml_existDataAcount() {
+        if (!isTest) return;
         insertData();
         TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);
 
         //add some data for retrieve;
-        System.out.println("current dataAccount="+this.strDataAccount);
-        txTemp.dataAccount(this.strDataAccount).setText("textKey","{\"dest\":\"KA001\",\"id\":\"cc-fin01-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN001\"}",-1);
-        txTemp.dataAccount(this.strDataAccount).setXML("xmlKey","<person>\n" +
+        System.out.println("current dataAccount=" + this.strDataAccount);
+        txTemp.dataAccount(this.strDataAccount).setText("textKey", "{\"dest\":\"KA001\",\"id\":\"cc-fin01-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN001\"}", -1);
+        txTemp.dataAccount(this.strDataAccount).setXML("xmlKey", "<person>\n" +
                 "    <age value=\"too young\" />\n" +
                 "    <experience value=\"too simple\" />\n" +
                 "    <result value=\"sometimes naive\" />\n" +
-                "</person>",-1);
+                "</person>", -1);
 
         // TX 准备就绪
         PreparedTransaction prepTx = txTemp.prepare();
@@ -58,19 +58,19 @@ public class SDKTest extends SDK_Base_Demo {
      */
     @Test
     public void insertData() {
-        if(!isTest) return;
+        if (!isTest) return;
         // 在本地定义注册账号的 TX；
         TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);
         //采用KeyGenerator来生成BlockchainKeypair;
         BlockchainKeypair dataAccount = BlockchainKeyGenerator.getInstance().generate();
 
         txTemp.dataAccounts().register(dataAccount.getIdentity());
-        txTemp.dataAccount(dataAccount.getAddress()).setText("key1","value1",-1);
+        txTemp.dataAccount(dataAccount.getAddress()).setText("key1", "value1", -1);
         //add some data for retrieve;
         this.strDataAccount = dataAccount.getAddress().toBase58();
-        System.out.println("current dataAccount="+dataAccount.getAddress());
-//        txTemp.dataAccount(dataAccount.getAddress()).setText("cc-fin01-01","{\"dest\":\"KA001\",\"id\":\"cc-fin01-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN001\"}",-1);
-//        txTemp.dataAccount(dataAccount.getAddress()).setText("cc-fin02-01","{\"dest\":\"KA001\",\"id\":\"cc-fin02-01\",\"items\":\"FIN002|2000\",\"source\":\"FIN002\"}",-1);
+        System.out.println("current dataAccount=" + dataAccount.getAddress());
+        txTemp.dataAccount(dataAccount.getAddress()).setText("cc-fin01-01", "{\"dest\":\"KA001\",\"id\":\"cc-fin01-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN001\"}", -1);
+        txTemp.dataAccount(dataAccount.getAddress()).setJSON("cc-fin02-01", "{\"dest\":\"KA001\",\"id\":\"cc-fin02-01\",\"items\":\"FIN002|2000\",\"source\":\"FIN002\"}", -1);
 
         // TX 准备就绪
         PreparedTransaction prepTx = txTemp.prepare();
@@ -78,16 +78,16 @@ public class SDKTest extends SDK_Base_Demo {
 
         // 提交交易；
         TransactionResponse transactionResponse = prepTx.commit();
-        if(transactionResponse.isSuccess()){
+        if (transactionResponse.isSuccess()) {
             getData(dataAccount.getAddress().toBase58());
-        }else {
-            System.out.println("exception="+transactionResponse.getExecutionState().toString());
+        } else {
+            System.out.println("exception=" + transactionResponse.getExecutionState().toString());
         }
     }
 
     @Test
     public void insertDataMore() throws InterruptedException {
-        for(int i=0;i<15;i++){
+        for (int i = 0; i < 15; i++) {
             insertData();
             Thread.sleep(1000);
         }
@@ -98,29 +98,29 @@ public class SDKTest extends SDK_Base_Demo {
      * 根据已有的数据账户地址，添加数据;
      */
     @Test
-    public void inserDataByExisDataAccount(){
-        if(!isTest) return;
+    public void inserDataByExisDataAccount() {
+        if (!isTest) return;
         this.strDataAccount = "LdeNremWbMBmmn4hJkgYBqGqruMYE8iZqjeF5";
         TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);
 
         //add some data for retrieve;
-        System.out.println("current dataAccount="+this.strDataAccount);
+        System.out.println("current dataAccount=" + this.strDataAccount);
         txTemp.dataAccount(this.strDataAccount).setText("cc-fin01-01",
-                "{\"dest\":\"KA001\",\"id\":\"cc-fin01-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN001\"}",-1);
+                "{\"dest\":\"KA001\",\"id\":\"cc-fin01-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN001\"}", -1);
         txTemp.dataAccount(this.strDataAccount).setText("cc-fin02-01",
-                "{\"dest\":\"KA001\",\"id\":\"cc-fin02-01\",\"items\":\"FIN002|2000\",\"source\":\"FIN002\"}",-1);
+                "{\"dest\":\"KA001\",\"id\":\"cc-fin02-01\",\"items\":\"FIN002|2000\",\"source\":\"FIN002\"}", -1);
         txTemp.dataAccount(this.strDataAccount).setText("cc-fin03-01",
-                "{\"dest\":\"KA001\",\"id\":\"cc-fin03-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN003\"}",-1);
+                "{\"dest\":\"KA001\",\"id\":\"cc-fin03-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN003\"}", -1);
         txTemp.dataAccount(this.strDataAccount).setText("cc-fin04-01",
-                "{\"dest\":\"KA002\",\"id\":\"cc-fin04-01\",\"items\":\"FIN003|3000\",\"source\":\"FIN002\"}",-1);
+                "{\"dest\":\"KA002\",\"id\":\"cc-fin04-01\",\"items\":\"FIN003|3000\",\"source\":\"FIN002\"}", -1);
         txTemp.dataAccount(this.strDataAccount).setText("cc-fin05-01",
-                "{\"dest\":\"KA003\",\"id\":\"cc-fin05-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN001\"}",-1);
+                "{\"dest\":\"KA003\",\"id\":\"cc-fin05-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN001\"}", -1);
         txTemp.dataAccount(this.strDataAccount).setText("cc-fin06-01",
-                "{\"dest\":\"KA004\",\"id\":\"cc-fin06-01\",\"items\":\"FIN002|2020\",\"source\":\"FIN001\"}",-1);
+                "{\"dest\":\"KA004\",\"id\":\"cc-fin06-01\",\"items\":\"FIN002|2020\",\"source\":\"FIN001\"}", -1);
         txTemp.dataAccount(this.strDataAccount).setText("cc-fin07-01",
-                "{\"dest\":\"KA005\",\"id\":\"cc-fin07-01\",\"items\":\"FIN001|5010\",\"source\":\"FIN001\"}",-1);
+                "{\"dest\":\"KA005\",\"id\":\"cc-fin07-01\",\"items\":\"FIN001|5010\",\"source\":\"FIN001\"}", -1);
         txTemp.dataAccount(this.strDataAccount).setText("cc-fin08-01",
-                "{\"dest\":\"KA006\",\"id\":\"cc-fin08-01\",\"items\":\"FIN001|3030\",\"source\":\"FIN001\"}",-1);
+                "{\"dest\":\"KA006\",\"id\":\"cc-fin08-01\",\"items\":\"FIN001|3030\",\"source\":\"FIN001\"}", -1);
 
         // TX 准备就绪
         PreparedTransaction prepTx = txTemp.prepare();
@@ -150,7 +150,7 @@ public class SDKTest extends SDK_Base_Demo {
                 for (Operation operation : operations) {
                     operation = ClientResolveUtil.read(operation);
                     // 操作类型：数据账户注册操作
-                    if (operation instanceof  DataAccountRegisterOperation) {
+                    if (operation instanceof DataAccountRegisterOperation) {
                         DataAccountRegisterOperation daro = (DataAccountRegisterOperation) operation;
                         BlockchainIdentity blockchainIdentity = daro.getAccountID();
                     }
@@ -162,7 +162,7 @@ public class SDKTest extends SDK_Base_Demo {
                     // 操作类型：账本注册操作
                     else if (operation instanceof LedgerInitOperation) {
 
-                        LedgerInitOperation ledgerInitOperation = (LedgerInitOperation)operation;
+                        LedgerInitOperation ledgerInitOperation = (LedgerInitOperation) operation;
                         LedgerInitSetting ledgerInitSetting = ledgerInitOperation.getInitSetting();
 
                         ParticipantNode[] participantNodes = ledgerInitSetting.getConsensusParticipants();
@@ -225,7 +225,7 @@ public class SDKTest extends SDK_Base_Demo {
 
         // 生成一个合约账号
         BlockchainKeypair contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
-        System.out.println("contract's address="+contractDeployKey.getAddress());
+        System.out.println("contract's address=" + contractDeployKey.getAddress());
 
         // 生成发布合约操作
         txTpl.contracts().deploy(contractDeployKey.getIdentity(), contractCode);
@@ -265,15 +265,15 @@ public class SDKTest extends SDK_Base_Demo {
 
     //contract bifurcation
     @Test
-    public void executeContractBifByHalf(){
-            this.executeContractBif("half");
+    public void executeContractBifByHalf() {
+        this.executeContractBif("half");
     }
 
     /**
      * bifurcation, 3:1;
      */
     @Test
-    public void executeContractBifBy31(){
+    public void executeContractBifBy31() {
         this.executeContractBif("most");
     }
 
@@ -287,7 +287,7 @@ public class SDKTest extends SDK_Base_Demo {
 
         // 生成一个合约账号
         BlockchainKeypair contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
-        System.out.println("contract's address="+contractDeployKey.getAddress());
+        System.out.println("contract's address=" + contractDeployKey.getAddress());
 
         // 生成发布合约操作
         txTpl.contracts().deploy(contractDeployKey.getIdentity(), contractCode);
@@ -322,7 +322,7 @@ public class SDKTest extends SDK_Base_Demo {
         // 创建两个账号：
         String account0 = "jd_zhangsan";
         String content = "{\"dest\":\"KA006\",\"id\":\"cc-fin08-01\",\"items\":\"FIN001|3030\",\"source\":\"FIN001\"}";
-        System.out.println(createBif(dataAddress, account0, content, contractAddress,isHalf));
+        System.out.println(createBif(dataAddress, account0, content, contractAddress, isHalf));
     }
 
     private BlockchainKeypair createDataAccount() {
@@ -340,7 +340,7 @@ public class SDKTest extends SDK_Base_Demo {
         TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
         // 使用合约创建
         Guanghu guanghu = txTpl.contract(contractAddress, Guanghu.class);
-        GenericValueHolder<String> result = decode(guanghu.putval(address,account,content));
+        GenericValueHolder<String> result = decode(guanghu.putval(address, account, content));
         commit(txTpl);
         return result.get();
     }
@@ -349,7 +349,7 @@ public class SDKTest extends SDK_Base_Demo {
         TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
         // 使用合约创建
         Guanghu guanghu = txTpl.contract(contractAddress, Guanghu.class);
-        GenericValueHolder<String> result = decode(guanghu.putvalBifurcation(address,account,content,isHalf));
+        GenericValueHolder<String> result = decode(guanghu.putvalBifurcation(address, account, content, isHalf));
         commit(txTpl);
         return result.get();
     }
@@ -363,8 +363,8 @@ public class SDKTest extends SDK_Base_Demo {
     }
 
     @Test
-    public void rigisterUserMore(){
-        for(int i=0;i<15;i++){
+    public void rigisterUserMore() {
+        for (int i = 0; i < 15; i++) {
             this.registerUser();
         }
     }
@@ -373,14 +373,14 @@ public class SDKTest extends SDK_Base_Demo {
      * use the exist user to sign;
      */
     @Test
-    public void registerNewUserByExistUser(){
+    public void registerNewUserByExistUser() {
         //first invoke the case: registerExistUser(), to rigister user in the ledger;
         //now use the existUser to sign;
         // 在本地定义注册账号的 TX；
         TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);
 
         BlockchainKeypair user = BlockchainKeyGenerator.getInstance().generate();
-        System.out.println("user'id="+user.getAddress());
+        System.out.println("user'id=" + user.getAddress());
         txTemp.users().register(user.getIdentity());
         // TX 准备就绪；
         PreparedTransaction prepTx = txTemp.prepare();
@@ -395,18 +395,18 @@ public class SDKTest extends SDK_Base_Demo {
      */
     @Test
     public void insertDataByExistUser() {
-        if(!isTest) return;
+        if (!isTest) return;
         // 在本地定义注册账号的 TX；
         TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);
         //采用KeyGenerator来生成BlockchainKeypair;
         BlockchainKeypair dataAccount = BlockchainKeyGenerator.getInstance().generate();
 
         txTemp.dataAccounts().register(dataAccount.getIdentity());
-        txTemp.dataAccount(dataAccount.getAddress()).setText("key1","value1",-1);
+        txTemp.dataAccount(dataAccount.getAddress()).setText("key1", "value1", -1);
         //add some data for retrieve;
         this.strDataAccount = dataAccount.getAddress().toBase58();
-        System.out.println("current dataAccount="+dataAccount.getAddress());
-        txTemp.dataAccount(dataAccount.getAddress()).setText("cc-fin01-01","{\"dest\":\"KA001\",\"id\":\"cc-fin01-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN001\"}",-1);
+        System.out.println("current dataAccount=" + dataAccount.getAddress());
+        txTemp.dataAccount(dataAccount.getAddress()).setText("cc-fin01-01", "{\"dest\":\"KA001\",\"id\":\"cc-fin01-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN001\"}", -1);
 
         // TX 准备就绪
         PreparedTransaction prepTx = txTemp.prepare();
@@ -414,20 +414,20 @@ public class SDKTest extends SDK_Base_Demo {
 
         // 提交交易；
         TransactionResponse transactionResponse = prepTx.commit();
-        if(transactionResponse.isSuccess()){
-            System.out.println("result="+transactionResponse.isSuccess());
-        }else {
-            System.out.println("exception="+transactionResponse.getExecutionState().toString());
+        if (transactionResponse.isSuccess()) {
+            System.out.println("result=" + transactionResponse.isSuccess());
+        } else {
+            System.out.println("exception=" + transactionResponse.getExecutionState().toString());
         }
     }
 
-    private void registerRole(String roleName){
+    private void registerRole(String roleName) {
         // 在本地定义注册账号的 TX；
         TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);
 
         // 定义角色权限；
         txTemp.security().roles().configure(roleName).enable(LedgerPermission.APPROVE_TX)
-                .enable(LedgerPermission.REGISTER_USER).disable( LedgerPermission.REGISTER_DATA_ACCOUNT)
+                .enable(LedgerPermission.REGISTER_USER).disable(LedgerPermission.REGISTER_DATA_ACCOUNT)
                 .enable(TransactionPermission.DIRECT_OPERATION);
 
         // TX 准备就绪；
@@ -441,10 +441,10 @@ public class SDKTest extends SDK_Base_Demo {
     /**
      * rigister the exist user to ledger;
      */
-    private void registerExistUser(String roleName){
+    private void registerExistUser(String roleName) {
         // 在本地定义注册账号的 TX；
         TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);
-        System.out.println("user'id="+existUser.getAddress());
+        System.out.println("user'id=" + existUser.getAddress());
 
         txTemp.users().register(existUser.getIdentity());
 //        txTemp.security().authorziations().forUser(newUser.getIdentity()).authorize("ROLE-ADD-DATA").setPolicy(RolesPolicy.INTERSECT);
@@ -461,18 +461,18 @@ public class SDKTest extends SDK_Base_Demo {
 
     private void checkInsertDataByExistUser() {
         System.out.println("checkInsertDataByExistUser() start...");
-        if(!isTest) return;
+        if (!isTest) return;
         // 在本地定义注册账号的 TX；
         TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);
         //采用KeyGenerator来生成BlockchainKeypair;
         BlockchainKeypair dataAccount = BlockchainKeyGenerator.getInstance().generate();
 
         txTemp.dataAccounts().register(dataAccount.getIdentity());
-        txTemp.dataAccount(dataAccount.getAddress()).setText("key1","value1",-1);
+        txTemp.dataAccount(dataAccount.getAddress()).setText("key1", "value1", -1);
         //add some data for retrieve;
         this.strDataAccount = dataAccount.getAddress().toBase58();
-        System.out.println("current dataAccount="+dataAccount.getAddress());
-        txTemp.dataAccount(dataAccount.getAddress()).setText("cc-fin01-01","{\"dest\":\"KA001\",\"id\":\"cc-fin01-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN001\"}",-1);
+        System.out.println("current dataAccount=" + dataAccount.getAddress());
+        txTemp.dataAccount(dataAccount.getAddress()).setText("cc-fin01-01", "{\"dest\":\"KA001\",\"id\":\"cc-fin01-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN001\"}", -1);
 
         // TX 准备就绪
         PreparedTransaction prepTx = txTemp.prepare();
@@ -480,10 +480,10 @@ public class SDKTest extends SDK_Base_Demo {
 
         // 提交交易；
         TransactionResponse transactionResponse = prepTx.commit();
-        if(transactionResponse.isSuccess()){
-            System.out.println("result="+transactionResponse.isSuccess());
-        }else {
-            System.out.println("exception="+transactionResponse.getExecutionState().toString());
+        if (transactionResponse.isSuccess()) {
+            System.out.println("result=" + transactionResponse.isSuccess());
+        } else {
+            System.out.println("exception=" + transactionResponse.getExecutionState().toString());
         }
     }
 
@@ -494,7 +494,7 @@ public class SDKTest extends SDK_Base_Demo {
      * so you will use a new user to connect the gateway and signed by it. you can see the demo {@link SDKDemo_RegisterUser#checkPermission()}
      */
     @Test
-    public void checkPermission(){
+    public void checkPermission() {
         String roleName = "ROLE-ADD-DATA";
         registerRole(roleName);
         registerExistUser(roleName);

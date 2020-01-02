@@ -19,7 +19,7 @@ master与最新的release分支保持一致。其它分支打tag。
 1）新增了常见问题.md文件；  
 2）针对洋渝的使用实践，添加了其使用样例，方便用户学习；
 
-## 3.版本1.0.3.RELEASE说明
+## 4.版本1.0.3.RELEASE说明
 1）针对956454822@qq.com的问题，在常见问题.md文件中给出说明；  
 2）基于jdchain1.0.0.RELEASE版本给出新的使用样例，本版本基于接口来编程，对合约样例进行了重新梳理，并采用main()函数的方式来执行合约测试用例;  
 3）更新了doc文件夹中的JDChain-Start快速使用指南.md文档；  
@@ -27,7 +27,7 @@ master与最新的release分支保持一致。其它分支打tag。
 5）新增了“快速部署JDChain.pdf”文档，方便开发使用；   
 6）添加了ssh-keygen的整合单元测试SshKeyTest.java； 
 
-## 4.版本1.0.4.RELEASE说明
+## 5.版本1.0.4.RELEASE说明
 1）样例基于JDChain1.1.0.RELEASE版本构建;  
 2）合约构建采用了全新的插件：contract-maven-plugin；  
 3）编写合约默认不允许使用系统package：com.jd.blockchain.contract，可改为：com.jd.chain.contract ；  
@@ -39,6 +39,6 @@ master与最新的release分支保持一致。其它分支打tag。
 9）针对ssh兼容测试给出了单元测试样例：SshKeyTest.java；  
 10）删除“快速部署JDChain.pdf”文档，改用全新的界面部署的方式；  
    
-## 4.版本1.0.5.RELEASE说明
+## 6.版本1.0.5.RELEASE说明
 1）样例基于JDChain1.1.1.RELEASE版本构建;  
    
