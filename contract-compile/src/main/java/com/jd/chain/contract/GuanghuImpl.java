@@ -3,7 +3,7 @@ package com.jd.chain.contract;
 import com.jd.blockchain.contract.ContractEventContext;
 import com.jd.blockchain.contract.EventProcessingAware;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.KVDataEntry;
+import com.jd.blockchain.ledger.TypedKVEntry;
 
 /*
  * 广互链码实现类 add by syf 2019.09.03
@@ -14,7 +14,7 @@ public class GuanghuImpl implements EventProcessingAware,Guanghu {
 
     @Override
     public String putvalBifurcation(String address, String account, String content, String isHalf) {
-        KVDataEntry[] kvDataEntries=eventContext.getLedger().getDataEntries(ledgerHash,address,account);
+        TypedKVEntry[] kvDataEntries=eventContext.getLedger().getDataEntries(ledgerHash,address,account);
         if(kvDataEntries!=null && kvDataEntries.length>0){
             long currVersion = kvDataEntries[0].getVersion();
             if (currVersion > -1) {
@@ -50,7 +50,7 @@ public class GuanghuImpl implements EventProcessingAware,Guanghu {
 
     @Override
     public String putval(String address, String account, String content) {
-        KVDataEntry[] kvDataEntries=eventContext.getLedger().getDataEntries(ledgerHash,address,account);
+        TypedKVEntry[] kvDataEntries=eventContext.getLedger().getDataEntries(ledgerHash,address,account);
         if(kvDataEntries!=null && kvDataEntries.length>0){
             long currVersion = kvDataEntries[0].getVersion();
             if (currVersion > -1) {
@@ -65,7 +65,7 @@ public class GuanghuImpl implements EventProcessingAware,Guanghu {
 
     @Override
     public String getval(String address, String account) {
-        KVDataEntry[] kvDataEntries = eventContext.getLedger().getDataEntries(ledgerHash, address, account);
+        TypedKVEntry[] kvDataEntries = eventContext.getLedger().getDataEntries(ledgerHash, address, account);
         if (kvDataEntries == null || kvDataEntries.length == 0) {
             return "";
         }

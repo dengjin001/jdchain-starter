@@ -2,8 +2,7 @@ package com.jd.blockchain;
 
 import com.jd.blockchain.crypto.*;
 import com.jd.blockchain.ledger.BlockchainKeypair;
-import com.jd.blockchain.ledger.BytesData;
-import com.jd.blockchain.ledger.BytesValue;
+import com.jd.blockchain.ledger.TypedValue;
 import com.jd.blockchain.transaction.KVData;
 import com.jd.blockchain.utils.codec.Base58Utils;
 import com.jd.blockchain.utils.io.ByteArray;
@@ -62,11 +61,11 @@ public class KeyTest {
     public void checkBytesData() throws UnsupportedEncodingException {
         String keyStr = "key2";
         String valueStr = "value2";
-        BytesValue bytesValue = BytesData.fromText(valueStr);
-        System.out.println(BytesData.toText(bytesValue));
+        TypedValue bytesValue = TypedValue.fromText(valueStr);
+        System.out.println(bytesValue.getBytes().toUTF8String());
         KVData kvdata = new KVData(keyStr, bytesValue, 0);
-        System.out.println(kvdata.getValue().getValue().toUTF8String());
-        String base58Str = bytesValue.getValue().toString();
+        System.out.println(kvdata.getValue().toString());
+        String base58Str = bytesValue.getBytes().toBase58();
         System.out.println("base58Str = "+base58Str);
         Assert.assertEquals(new String(Base58Utils.decode(base58Str),"utf-8"),valueStr);
     }

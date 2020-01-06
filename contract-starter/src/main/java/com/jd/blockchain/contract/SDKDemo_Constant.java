@@ -12,19 +12,19 @@ import java.io.File;
 public class SDKDemo_Constant {
 
     //151.39;
-    public static final String GW_IPADDR = "localhost";
-    public static final int GW_PORT = 11000;
-    public static final String GW_PUB_KEY = "3snPdw7i7PjVKiTH2VnXZu5H8QmNaSXpnk4ei533jFpuifyjS5zzH9";
-    public static final String GW_PRIV_KEY = "177gjzHTznYdPgWqZrH43W3yp37onm74wYXT4v9FukpCHBrhRysBBZh7Pzdo5AMRyQGJD7x";
-    //the content of *.pwd file;
-    public static final String GW_PASSWORD = "DYu3G8aGTMBW1WrTw76zxQJQU4DHLw9MLyy7peG4LKkY";
+//    public static final String GW_IPADDR = "localhost";
+//    public static final int GW_PORT = 11000;
+//    public static final String GW_PUB_KEY = "3snPdw7i7PjVKiTH2VnXZu5H8QmNaSXpnk4ei533jFpuifyjS5zzH9";
+//    public static final String GW_PRIV_KEY = "177gjzHTznYdPgWqZrH43W3yp37onm74wYXT4v9FukpCHBrhRysBBZh7Pzdo5AMRyQGJD7x";
+//    //the content of *.pwd file;
+//    public static final String GW_PASSWORD = "DYu3G8aGTMBW1WrTw76zxQJQU4DHLw9MLyy7peG4LKkY";
 
     //localhost;
-//    public static final String GW_IPADDR = "jdchain-t.jd.com";
-//    public static final int GW_PORT = 8181;
-//    public static final String GW_PUB_KEY = "3snPdw7i7PfKAmHwKRFXyuEkahSGmCRNo7FbNtcCWbsSicneKLQTei";
-//    public static final String GW_PRIV_KEY = "177gjufTyEgebqDxSY8q44F6CGwD9xhWMrGW64NVCyj6WKoGbLpFWd5nj5ChyHeXuY9yhNh";
-//    public static final String GW_PASSWORD = "DYu3G8aGTMBW1WrTw76zxQJQU4DHLw9MLyy7peG4LKkY";
+    public static final String GW_IPADDR = "jdchain-t.jd.com";
+    public static final int GW_PORT = 8081;
+    public static final String GW_PUB_KEY = "3snPdw7i7Pbdsovw3t87SMNQwcvV5F3VpvVThQiRzzctmRK122AW3k";
+    public static final String GW_PRIV_KEY = "177gjudHRcYqKxAEVwj7dzQhZ8Rwev1XU63CTR71PzwfohxJ2HvKd3wNg6yuLw4Vr7bk8Uw";
+    public static final String GW_PASSWORD = "DYu3G8aGTMBW1WrTw76zxQJQU4DHLw9MLyy7peG4LKkY";
 
     public static PrivKey gwPrivkey0 = KeyGenUtils.decodePrivKey(GW_PRIV_KEY, GW_PASSWORD);
     public static PubKey gwPubKey0 = KeyGenUtils.decodePubKey(GW_PUB_KEY);

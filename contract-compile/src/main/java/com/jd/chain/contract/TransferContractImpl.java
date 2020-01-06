@@ -4,9 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.jd.blockchain.contract.ContractEventContext;
 import com.jd.blockchain.contract.EventProcessingAware;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.KVDataVO;
 import com.jd.blockchain.ledger.KVInfoVO;
+import com.jd.blockchain.ledger.TypedKVEntry;
 
 public class TransferContractImpl implements EventProcessingAware, TransferContract {
 
@@ -16,7 +16,7 @@ public class TransferContractImpl implements EventProcessingAware, TransferContr
 
     @Override
     public String create(String address, String account, long money) {
-        KVDataEntry[] kvDataEntries = eventContext.getLedger().getDataEntries(ledgerHash, address, account);
+        TypedKVEntry[] kvDataEntries = eventContext.getLedger().getDataEntries(ledgerHash, address, account);
         // 肯定有返回值，但若不存在则返回version=-1
         if (kvDataEntries != null && kvDataEntries.length > 0) {
             long currVersion = kvDataEntries[0].getVersion();
@@ -34,13 +34,13 @@ public class TransferContractImpl implements EventProcessingAware, TransferContr
     @Override
     public String transfer(String address, String from, String to, long money) {
         // 首先查询余额
-        KVDataEntry[] kvDataEntries = eventContext.getLedger().getDataEntries(ledgerHash, address, from, to);
+        TypedKVEntry[] kvDataEntries = eventContext.getLedger().getDataEntries(ledgerHash, address, from, to);
         if (kvDataEntries == null || kvDataEntries.length != 2) {
             throw new IllegalStateException(String.format("%s -> %s - %s may be not created !!!", address, from, to));
         } else {
             // 判断from账号中钱数量是否足够
             long fromMoney = 0L, toMoney = 0L, fromVersion = 0L, toVersion = 0L;
-            for (KVDataEntry kvDataEntry : kvDataEntries) {
+            for (TypedKVEntry kvDataEntry : kvDataEntries) {
                 if (kvDataEntry.getKey().equals(from)) {
                     fromMoney = (long) kvDataEntry.getValue();
                     fromVersion = kvDataEntry.getVersion();
@@ -64,7 +64,7 @@ public class TransferContractImpl implements EventProcessingAware, TransferContr
 
     @Override
     public long read(String address, String account) {
-        KVDataEntry[] kvDataEntries = eventContext.getLedger().getDataEntries(ledgerHash, address, account);
+        TypedKVEntry[] kvDataEntries = eventContext.getLedger().getDataEntries(ledgerHash, address, account);
         if (kvDataEntries == null || kvDataEntries.length == 0) {
             return -1;
         }
@@ -73,7 +73,7 @@ public class TransferContractImpl implements EventProcessingAware, TransferContr
 
     @Override
     public String readAll(String address, String account) {
-        KVDataEntry[] kvDataEntries = eventContext.getLedger().getDataEntries(ledgerHash, address, account);
+        TypedKVEntry[] kvDataEntries = eventContext.getLedger().getDataEntries(ledgerHash, address, account);
         // 获取最新的版本号
         if (kvDataEntries == null || kvDataEntries.length == 0) {
             return "";
@@ -93,7 +93,7 @@ public class TransferContractImpl implements EventProcessingAware, TransferContr
 
         KVInfoVO kvInfoVO = new KVInfoVO(kvDataVOS);
 
-        KVDataEntry[] allEntries = eventContext.getLedger().getDataEntries(ledgerHash, address, kvInfoVO);
+        TypedKVEntry[] allEntries = eventContext.getLedger().getDataEntries(ledgerHash, address, kvInfoVO);
 
         return JSON.toJSONString(allEntries);
     }
@@ -107,5 +107,10 @@ public class TransferContractImpl implements EventProcessingAware, TransferContr
     @Override
     public void postEvent(ContractEventContext eventContext, Exception error) {
 
+    }
+
+    @Override
+    public String test(){
+        return "123";
     }
 }
