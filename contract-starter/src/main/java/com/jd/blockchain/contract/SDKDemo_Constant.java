@@ -19,11 +19,11 @@ public class SDKDemo_Constant {
 //    //the content of *.pwd file;
 //    public static final String GW_PASSWORD = "DYu3G8aGTMBW1WrTw76zxQJQU4DHLw9MLyy7peG4LKkY";
 
-    //localhost;
+    //jdchain-t.jd.com;
     public static final String GW_IPADDR = "jdchain-t.jd.com";
     public static final int GW_PORT = 8081;
-    public static final String GW_PUB_KEY = "3snPdw7i7Pbdsovw3t87SMNQwcvV5F3VpvVThQiRzzctmRK122AW3k";
-    public static final String GW_PRIV_KEY = "177gjudHRcYqKxAEVwj7dzQhZ8Rwev1XU63CTR71PzwfohxJ2HvKd3wNg6yuLw4Vr7bk8Uw";
+    public static final String GW_PUB_KEY = "3snPdw7i7PePBa2PtELLXaGLrfpKcanVyiagcz4envcttTwvvY7ttB";
+    public static final String GW_PRIV_KEY = "177gjy3434nLahfcgKqyz5T6FectapEM7PkCKkXVsoeV93uEP8i1aVGhHhsGPW8cWmDvQet";
     public static final String GW_PASSWORD = "DYu3G8aGTMBW1WrTw76zxQJQU4DHLw9MLyy7peG4LKkY";
 
     public static PrivKey gwPrivkey0 = KeyGenUtils.decodePrivKey(GW_PRIV_KEY, GW_PASSWORD);
