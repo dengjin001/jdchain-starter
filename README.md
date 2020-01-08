@@ -5,7 +5,6 @@ The group mail: [jdchain-support@jd.com](jdchain-support@jd.com)
  
 如果您对快速上手应用有更好的建议，欢迎给我们发邮件。用户用得好才是真的好。  
 官网：[http://ledger.jd.com/](http://ledger.jd.com/)  
-知乎主页：[https://www.zhihu.com/people/jdchain](https://www.zhihu.com/people/jdchain) 
 
 master与最新的release分支保持一致。其它分支打tag。
 
