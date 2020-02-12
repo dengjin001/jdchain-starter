@@ -270,6 +270,19 @@ public class SDKTest extends SDK_Base_Demo {
     }
 
     /**
+     *  test  more bifurcation, then insertData;
+     *  purpose: Is the system still robust after much rollback ?
+     */
+
+    @Test
+    public void executeContractBifByHalf_more() {
+        for(int i=0;i<100;i++){
+            this.executeContractBif("half");
+        }
+        this.insertData();
+    }
+
+    /**
      * bifurcation, 3:1;
      */
     @Test
@@ -322,7 +335,7 @@ public class SDKTest extends SDK_Base_Demo {
         // 创建两个账号：
         String account0 = "jd_zhangsan";
         String content = "{\"dest\":\"KA006\",\"id\":\"cc-fin08-01\",\"items\":\"FIN001|3030\",\"source\":\"FIN001\"}";
-        System.out.println(createBif(dataAddress, account0, content, contractAddress, isHalf));
+        System.out.println("executeContractByHalf="+createBif(dataAddress, account0, content, contractAddress, isHalf));
     }
 
     private BlockchainKeypair createDataAccount() {
