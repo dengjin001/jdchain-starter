@@ -85,20 +85,11 @@ public class SDKTest extends SDK_Base_Demo {
         }
     }
 
-    @Test
-    public void insertDataMore() throws InterruptedException {
-        for (int i = 0; i < 15; i++) {
-            insertData();
-            Thread.sleep(1000);
-        }
-
-    }
-
     /**
      * 根据已有的数据账户地址，添加数据;
      */
     @Test
-    public void inserDataByExisDataAccount() {
+    public void insertDataByExistDataAccount() {
         if (!isTest) return;
         this.strDataAccount = "LdeNremWbMBmmn4hJkgYBqGqruMYE8iZqjeF5";
         TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);

@@ -42,7 +42,12 @@ class DataAccountThreadCall extends SDKTest implements Callable {
     public Object call() throws InterruptedException {
         while (true){
             insertData();
-            Thread.sleep(100);
+            Thread.sleep(1);
         }
+//        for(int i=0;i<100;i++){
+//            insertData();
+//            Thread.sleep(100);
+//        }
+//        return null;
     }
 }
