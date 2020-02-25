@@ -26,7 +26,7 @@ public class PerformanceTest extends SDKTest {
             service.submit(new DataAccountThreadCall());//适用于Callable
         }
         try {
-            Thread.sleep(1000*60*10);
+            Thread.sleep(1000*60*30);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -42,7 +42,7 @@ class DataAccountThreadCall extends SDKTest implements Callable {
     public Object call() throws InterruptedException {
         while (true){
             insertData();
-            Thread.sleep(1);
+            Thread.sleep(100);
         }
 //        for(int i=0;i<100;i++){
 //            insertData();
