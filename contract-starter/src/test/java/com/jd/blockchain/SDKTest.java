@@ -54,38 +54,6 @@ public class SDKTest extends SDK_Base_Demo {
     }
 
     /**
-     * 生成一个区块链数据账户，并注册到区块链；
-     */
-    @Test
-    public void insertData() {
-        if (!isTest) return;
-        // 在本地定义注册账号的 TX；
-        TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);
-        //采用KeyGenerator来生成BlockchainKeypair;
-        BlockchainKeypair dataAccount = BlockchainKeyGenerator.getInstance().generate();
-
-        txTemp.dataAccounts().register(dataAccount.getIdentity());
-        txTemp.dataAccount(dataAccount.getAddress()).setText("key1", "value1", -1);
-        //add some data for retrieve;
-        this.strDataAccount = dataAccount.getAddress().toBase58();
-        System.out.println("current dataAccount=" + dataAccount.getAddress());
-        txTemp.dataAccount(dataAccount.getAddress()).setText("cc-fin01-01", "{\"dest\":\"KA001\",\"id\":\"cc-fin01-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN001\"}", -1);
-        txTemp.dataAccount(dataAccount.getAddress()).setJSON("cc-fin02-01", "{\"dest\":\"KA001\",\"id\":\"cc-fin02-01\",\"items\":\"FIN002|2000\",\"source\":\"FIN002\"}", -1);
-
-        // TX 准备就绪
-        PreparedTransaction prepTx = txTemp.prepare();
-        prepTx.sign(adminKey);
-
-        // 提交交易；
-        TransactionResponse transactionResponse = prepTx.commit();
-        if (transactionResponse.isSuccess()) {
-            getData(dataAccount.getAddress().toBase58());
-        } else {
-            System.out.println("exception=" + transactionResponse.getExecutionState().toString());
-        }
-    }
-
-    /**
      * 根据已有的数据账户地址，添加数据;
      */
     @Test
@@ -503,5 +471,71 @@ public class SDKTest extends SDK_Base_Demo {
         registerRole(roleName);
         registerExistUser(roleName);
         checkInsertDataByExistUser();
+    }
+
+    @Test
+    public void insertDataByInvalidUsers() throws InterruptedException {
+        while(true){
+            this.insertDataByInvalidUser();
+            Thread.sleep(1000L);
+        }
+    }
+
+    /**
+     * 生成一个区块链数据账户，并注册到区块链；
+     */
+    @Test
+    public void insertData() {
+        if (!isTest) return;
+        // 在本地定义注册账号的 TX；
+        TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);
+        //采用KeyGenerator来生成BlockchainKeypair;
+        BlockchainKeypair dataAccount = BlockchainKeyGenerator.getInstance().generate();
+
+        txTemp.dataAccounts().register(dataAccount.getIdentity());
+        txTemp.dataAccount(dataAccount.getAddress()).setText("key1", "value1", -1);
+//        txTemp.dataAccount(dataAccount.getAddress()).setText("key2", "闫石反馈内容测试", -1);
+//        //add some data for retrieve;
+//        this.strDataAccount = dataAccount.getAddress().toBase58();
+        System.out.println("current dataAccount=" + dataAccount.getAddress());
+//        txTemp.dataAccount(dataAccount.getAddress()).setText("cc-fin01-01", "{\"dest\":\"KA001\",\"id\":\"cc-fin01-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN001\"}", -1);
+//        txTemp.dataAccount(dataAccount.getAddress()).setJSON("cc-fin02-01", "{\"dest\":\"KA001\",\"id\":\"cc-fin02-01\",\"items\":\"FIN002|2000\",\"source\":\"FIN002\"}", -1);
+
+        // TX 准备就绪
+        PreparedTransaction prepTx = txTemp.prepare();
+        prepTx.sign(adminKey);
+
+        // 提交交易；
+        TransactionResponse transactionResponse = prepTx.commit();
+        if (transactionResponse.isSuccess()) {
+            getData(dataAccount.getAddress().toBase58());
+        } else {
+            System.out.println("exception=" + transactionResponse.getExecutionState().toString());
+        }
+    }
+
+    @Test
+    public void insertDataByInvalidUser() {
+        if (!isTest) return;
+        // 在本地定义注册账号的 TX；
+        TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);
+        //采用KeyGenerator来生成BlockchainKeypair;
+        BlockchainKeypair dataAccount = BlockchainKeyGenerator.getInstance().generate();
+
+        txTemp.dataAccounts().register(dataAccount.getIdentity());
+        txTemp.dataAccount(dataAccount.getAddress()).setText("key1", "value1", -1);
+
+        // TX 准备就绪
+        PreparedTransaction prepTx = txTemp.prepare();
+        BlockchainKeypair invalidUser= BlockchainKeyGenerator.getInstance().generate();
+        prepTx.sign(invalidUser);
+
+        // 提交交易；
+        TransactionResponse transactionResponse = prepTx.commit();
+        if (transactionResponse.isSuccess()) {
+            getData(dataAccount.getAddress().toBase58());
+        } else {
+            System.out.println("exception=" + transactionResponse.getExecutionState().toString());
+        }
     }
 }
