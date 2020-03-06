@@ -1,9 +1,6 @@
 package com.jd.blockchain.contract;
 
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.crypto.KeyGenUtils;
-import com.jd.blockchain.crypto.PrivKey;
-import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
@@ -46,35 +43,43 @@ public abstract class SDK_Base_Demo {
      * 生成一个区块链用户，并注册到区块链；
      */
     public BlockchainKeypair registerUser() {
+        return this.registerUser(null,null);
+    }
+
+    public BlockchainKeypair registerUser(BlockchainKeypair signAdminKey, BlockchainKeypair userKeypair) {
         // 在本地定义注册账号的 TX；
         TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);
-        BlockchainKeypair user = BlockchainKeyGenerator.getInstance().generate();
-        System.out.println("user'id="+user.getAddress());
-        txTemp.users().register(user.getIdentity());
+        if(userKeypair == null){
+            userKeypair = BlockchainKeyGenerator.getInstance().generate();
+        }
+        System.out.println("user'address="+userKeypair.getAddress());
+        txTemp.users().register(userKeypair.getIdentity());
         // TX 准备就绪；
         PreparedTransaction prepTx = txTemp.prepare();
-        prepTx.sign(adminKey);
+        if(signAdminKey != null){
+            prepTx.sign(signAdminKey);
+        }else {
+            prepTx.sign(adminKey);
+        }
 
         // 提交交易；
-        prepTx.commit();
-        return user;
+        TransactionResponse transactionResponse = prepTx.commit();
+        if (transactionResponse.isSuccess()) {
+            System.out.println(String.format("height=%d, ###OK#, contentHash=%s, executionState=%s",
+                    transactionResponse.getBlockHeight(),
+                    transactionResponse.getContentHash(), transactionResponse.getExecutionState().toString()));
+        } else {
+            System.out.println(String.format("height=%d, ###exception#, contentHash=%s, executionState=%s",
+                    transactionResponse.getBlockHeight(),
+                    transactionResponse.getContentHash(), transactionResponse.getExecutionState().toString()));
+        }
+        return userKeypair;
     }
 
     /**
      * 生成一个区块链用户，并注册到区块链；
      */
     public BlockchainKeypair registerUserByNewSigner(BlockchainKeypair signer) {
-        // 在本地定义注册账号的 TX；
-        TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);
-        BlockchainKeypair user = BlockchainKeyGenerator.getInstance().generate();
-        System.out.println("user'id="+user.getAddress());
-        txTemp.users().register(user.getIdentity());
-        // TX 准备就绪；
-        PreparedTransaction prepTx = txTemp.prepare();
-        prepTx.sign(signer);
-
-        // 提交交易；
-        TransactionResponse transactionResponse = prepTx.commit();
-        return user;
+        return this.registerUser(signer,null);
     }
 }

@@ -19,7 +19,7 @@ import static com.jd.blockchain.transaction.ContractReturnValue.decode;
  */
 public class SDKTest extends SDK_Base_Demo {
     //because it need to connect the web, so make the switch;
-    private boolean isTest = true;
+    public boolean isTest = true;
     private String strDataAccount;
     private BlockchainKeypair existUser;
 
@@ -175,51 +175,63 @@ public class SDKTest extends SDK_Base_Demo {
 
     @Test
     public void executeContractOK() {
+        this.contractHandle(null,null,null,true,true);
+    }
+
+    public void contractHandle(String contractZipName, BlockchainKeypair signAdminKey, BlockchainKeypair contractDeployKey,
+                               boolean isDeploy, boolean isExecute) {
+        if(contractZipName == null){
+            contractZipName = "contract-JDChain-Contract.jar";
+        }
         // 发布jar包
         // 定义交易模板
         TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
+        Bytes contractAddress = null;
+        if(isDeploy){
+            // 将jar包转换为二进制数据
+            byte[] contractCode = readChainCodes(contractZipName);
 
-        // 将jar包转换为二进制数据
-        byte[] contractCode = readChainCodes("contract-JDChain-Contract.jar");
+            // 生成一个合约账号
+            if(contractDeployKey == null){
+                contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
+            }
+            System.out.println("contract's address=" + contractDeployKey.getAddress());
 
-        // 生成一个合约账号
-        BlockchainKeypair contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
-        System.out.println("contract's address=" + contractDeployKey.getAddress());
+            // 生成发布合约操作
+            txTpl.contracts().deploy(contractDeployKey.getIdentity(), contractCode);
 
-        // 生成发布合约操作
-        txTpl.contracts().deploy(contractDeployKey.getIdentity(), contractCode);
+            // 生成预发布交易；
+            PreparedTransaction ptx = txTpl.prepare();
 
-        // 生成预发布交易；
-        PreparedTransaction ptx = txTpl.prepare();
+            // 对交易进行签名
+            ptx.sign(adminKey);
 
-        // 对交易进行签名
-        ptx.sign(adminKey);
+            // 提交并等待共识返回；
+            TransactionResponse transactionResponse = ptx.commit();
+            if (transactionResponse.isSuccess()) {
+                System.out.println(String.format("height=%d, ###OK#, contentHash=%s, executionState=%s",
+                        transactionResponse.getBlockHeight(),
+                        transactionResponse.getContentHash(), transactionResponse.getExecutionState().toString()));
+            } else {
+                System.out.println(String.format("height=%d, ###exception#, contentHash=%s, executionState=%s",
+                        transactionResponse.getBlockHeight(),
+                        transactionResponse.getContentHash(), transactionResponse.getExecutionState().toString()));
+            }
+        }
 
-        // 提交并等待共识返回；
-        TransactionResponse txResp = ptx.commit();
+        if(isExecute){
+            // 注册一个数据账户
+            BlockchainKeypair dataAccount = createDataAccount();
+            // 获取数据账户地址
+            String dataAddress = dataAccount.getAddress().toBase58();
+            // 打印数据账户地址
+            System.out.printf("DataAccountAddress = %s \r\n", dataAddress);
 
-        // 获取合约地址
-        Bytes contractAddress = contractDeployKey.getAddress();
-
-        // 打印交易返回信息
-        System.out.printf("Tx[%s] -> BlockHeight = %s, BlockHash = %s, isSuccess = %s, ExecutionState = %s \r\n",
-                txResp.getContentHash().toBase58(), txResp.getBlockHeight(), txResp.getBlockHash().toBase58(),
-                txResp.isSuccess(), txResp.getExecutionState());
-
-        // 打印合约地址
-        System.out.printf("ContractAddress = %s \r\n", contractAddress.toBase58());
-
-        // 注册一个数据账户
-        BlockchainKeypair dataAccount = createDataAccount();
-        // 获取数据账户地址
-        String dataAddress = dataAccount.getAddress().toBase58();
-        // 打印数据账户地址
-        System.out.printf("DataAccountAddress = %s \r\n", dataAddress);
-
-        // 创建两个账号：
-        String account0 = "jd_zhangsan";
-        String content = "{\"dest\":\"KA006\",\"id\":\"cc-fin08-01\",\"items\":\"FIN001|3030\",\"source\":\"FIN001\"}";
-        System.out.println(create(dataAddress, account0, content, contractAddress));
+            // 创建两个账号：
+            String account0 = "jd_zhangsan";
+            String content = "{\"dest\":\"KA006\",\"id\":\"cc-fin08-01\",\"items\":\"FIN001|3030\",\"source\":\"FIN001\"}";
+            System.out.println("return value = "+create(dataAddress, account0, content, contractAddress));
+        }
     }
 
     //contract bifurcation
@@ -486,11 +498,17 @@ public class SDKTest extends SDK_Base_Demo {
      */
     @Test
     public void insertData() {
+        this.insertData(null,null);
+    }
+
+    public void insertData(BlockchainKeypair dataAccount, BlockchainKeypair signAdminKey) {
         if (!isTest) return;
         // 在本地定义注册账号的 TX；
         TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);
         //采用KeyGenerator来生成BlockchainKeypair;
-        BlockchainKeypair dataAccount = BlockchainKeyGenerator.getInstance().generate();
+        if(dataAccount == null){
+            dataAccount = BlockchainKeyGenerator.getInstance().generate();
+        }
 
         txTemp.dataAccounts().register(dataAccount.getIdentity());
         txTemp.dataAccount(dataAccount.getAddress()).setText("key1", "value1", -1);
@@ -503,14 +521,26 @@ public class SDKTest extends SDK_Base_Demo {
 
         // TX 准备就绪
         PreparedTransaction prepTx = txTemp.prepare();
-        prepTx.sign(adminKey);
+        if(signAdminKey!=null){
+            System.out.println("signAdminKey's pubKey = "+signAdminKey.getIdentity().getPubKey());
+            prepTx.sign(signAdminKey);
+        }else {
+            System.out.println("adminKey's pubKey = "+adminKey.getIdentity().getPubKey());
+            prepTx.sign(adminKey);
+        }
+
 
         // 提交交易；
         TransactionResponse transactionResponse = prepTx.commit();
         if (transactionResponse.isSuccess()) {
+            System.out.println(String.format("height=%d, ###OK#, contentHash=%s, executionState=%s",
+                    transactionResponse.getBlockHeight(),
+                    transactionResponse.getContentHash(), transactionResponse.getExecutionState().toString()));
             getData(dataAccount.getAddress().toBase58());
         } else {
-            System.out.println("exception=" + transactionResponse.getExecutionState().toString());
+            System.out.println(String.format("height=%d, ###exception#, contentHash=%s, executionState=%s",
+                    transactionResponse.getBlockHeight(),
+                    transactionResponse.getContentHash(), transactionResponse.getExecutionState().toString()));
         }
     }
 
@@ -533,9 +563,14 @@ public class SDKTest extends SDK_Base_Demo {
         // 提交交易；
         TransactionResponse transactionResponse = prepTx.commit();
         if (transactionResponse.isSuccess()) {
+            System.out.println(String.format("height=%d, ###OK#, contentHash=%s, executionState=%s",
+                    transactionResponse.getBlockHeight(),
+                    transactionResponse.getContentHash(), transactionResponse.getExecutionState().toString()));
             getData(dataAccount.getAddress().toBase58());
         } else {
-            System.out.println("exception=" + transactionResponse.getExecutionState().toString());
+            System.out.println(String.format("height=%d, ###exception#, contentHash=%s, executionState=%s",
+                    transactionResponse.getBlockHeight(),
+                    transactionResponse.getContentHash(), transactionResponse.getExecutionState().toString()));
         }
     }
 }
