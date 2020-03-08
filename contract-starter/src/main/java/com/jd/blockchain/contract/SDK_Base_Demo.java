@@ -34,9 +34,29 @@ public abstract class SDK_Base_Demo {
     }
 
     public TransactionResponse commit(TransactionTemplate txTpl) {
+        return this.commit(txTpl,null);
+    }
+
+    public TransactionResponse commit(TransactionTemplate txTpl, BlockchainKeypair signAdminKey) {
         PreparedTransaction ptx = txTpl.prepare();
-        ptx.sign(adminKey);
-        return ptx.commit();
+        if(signAdminKey != null){
+            System.out.println("signAdminKey's pubKey = "+signAdminKey.getIdentity().getPubKey());
+            ptx.sign(signAdminKey);
+        }else {
+            System.out.println("adminKey's pubKey = "+adminKey.getIdentity().getPubKey());
+            ptx.sign(adminKey);
+        }
+        TransactionResponse transactionResponse = ptx.commit();
+        if (transactionResponse.isSuccess()) {
+            System.out.println(String.format("height=%d, ###OK#, contentHash=%s, executionState=%s",
+                    transactionResponse.getBlockHeight(),
+                    transactionResponse.getContentHash(), transactionResponse.getExecutionState().toString()));
+        } else {
+            System.out.println(String.format("height=%d, ###exception#, contentHash=%s, executionState=%s",
+                    transactionResponse.getBlockHeight(),
+                    transactionResponse.getContentHash(), transactionResponse.getExecutionState().toString()));
+        }
+        return transactionResponse;
     }
 
     /**
@@ -55,24 +75,7 @@ public abstract class SDK_Base_Demo {
         System.out.println("user'address="+userKeypair.getAddress());
         txTemp.users().register(userKeypair.getIdentity());
         // TX 准备就绪；
-        PreparedTransaction prepTx = txTemp.prepare();
-        if(signAdminKey != null){
-            prepTx.sign(signAdminKey);
-        }else {
-            prepTx.sign(adminKey);
-        }
-
-        // 提交交易；
-        TransactionResponse transactionResponse = prepTx.commit();
-        if (transactionResponse.isSuccess()) {
-            System.out.println(String.format("height=%d, ###OK#, contentHash=%s, executionState=%s",
-                    transactionResponse.getBlockHeight(),
-                    transactionResponse.getContentHash(), transactionResponse.getExecutionState().toString()));
-        } else {
-            System.out.println(String.format("height=%d, ###exception#, contentHash=%s, executionState=%s",
-                    transactionResponse.getBlockHeight(),
-                    transactionResponse.getContentHash(), transactionResponse.getExecutionState().toString()));
-        }
+        commit(txTemp,signAdminKey);
         return userKeypair;
     }
 

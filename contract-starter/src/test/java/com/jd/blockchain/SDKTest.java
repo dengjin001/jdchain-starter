@@ -44,11 +44,7 @@ public class SDKTest extends SDK_Base_Demo {
                 "</person>", -1);
 
         // TX 准备就绪
-        PreparedTransaction prepTx = txTemp.prepare();
-        prepTx.sign(adminKey);
-
-        // 提交交易；
-        prepTx.commit();
+        commit(txTemp,adminKey);
 
         getData(strDataAccount);
     }
@@ -82,11 +78,7 @@ public class SDKTest extends SDK_Base_Demo {
                 "{\"dest\":\"KA006\",\"id\":\"cc-fin08-01\",\"items\":\"FIN001|3030\",\"source\":\"FIN001\"}", -1);
 
         // TX 准备就绪
-        PreparedTransaction prepTx = txTemp.prepare();
-        prepTx.sign(adminKey);
-
-        // 提交交易；
-        prepTx.commit();
+        commit(txTemp,adminKey);
 
         getData(strDataAccount);
     }
@@ -175,6 +167,7 @@ public class SDKTest extends SDK_Base_Demo {
 
     @Test
     public void executeContractOK() {
+//        BlockchainKeypair contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
         this.contractHandle(null,null,null,true,true);
     }
 
@@ -195,34 +188,20 @@ public class SDKTest extends SDK_Base_Demo {
             if(contractDeployKey == null){
                 contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
             }
-            System.out.println("contract's address=" + contractDeployKey.getAddress());
+            contractAddress = contractDeployKey.getAddress();
+            System.out.println("contract's address=" + contractAddress);
 
             // 生成发布合约操作
             txTpl.contracts().deploy(contractDeployKey.getIdentity(), contractCode);
 
             // 生成预发布交易；
-            PreparedTransaction ptx = txTpl.prepare();
-
-            // 对交易进行签名
-            ptx.sign(adminKey);
-
-            // 提交并等待共识返回；
-            TransactionResponse transactionResponse = ptx.commit();
-            if (transactionResponse.isSuccess()) {
-                System.out.println(String.format("height=%d, ###OK#, contentHash=%s, executionState=%s",
-                        transactionResponse.getBlockHeight(),
-                        transactionResponse.getContentHash(), transactionResponse.getExecutionState().toString()));
-            } else {
-                System.out.println(String.format("height=%d, ###exception#, contentHash=%s, executionState=%s",
-                        transactionResponse.getBlockHeight(),
-                        transactionResponse.getContentHash(), transactionResponse.getExecutionState().toString()));
-            }
+            commit(txTpl,signAdminKey);
         }
 
         if(isExecute){
             // 注册一个数据账户
             BlockchainKeypair dataAccount = createDataAccount();
-            // 获取数据账户地址
+            // 获取数据账户地址x
             String dataAddress = dataAccount.getAddress().toBase58();
             // 打印数据账户地址
             System.out.printf("DataAccountAddress = %s \r\n", dataAddress);
@@ -315,7 +294,6 @@ public class SDKTest extends SDK_Base_Demo {
 
         TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
         txTpl.dataAccounts().register(newDataAccount.getIdentity());
-//        txTpl.dataAccount(newDataAccount.getIdentity().getAddress()).setInt64("key1",123,-1);
         commit(txTpl);
         return newDataAccount;
     }
@@ -367,11 +345,7 @@ public class SDKTest extends SDK_Base_Demo {
         System.out.println("user'id=" + user.getAddress());
         txTemp.users().register(user.getIdentity());
         // TX 准备就绪；
-        PreparedTransaction prepTx = txTemp.prepare();
-        prepTx.sign(existUser);
-
-        // 提交交易；
-        prepTx.commit();
+        commit(txTemp,existUser);
     }
 
     /**
@@ -393,16 +367,7 @@ public class SDKTest extends SDK_Base_Demo {
         txTemp.dataAccount(dataAccount.getAddress()).setText("cc-fin01-01", "{\"dest\":\"KA001\",\"id\":\"cc-fin01-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN001\"}", -1);
 
         // TX 准备就绪
-        PreparedTransaction prepTx = txTemp.prepare();
-        prepTx.sign(existUser);
-
-        // 提交交易；
-        TransactionResponse transactionResponse = prepTx.commit();
-        if (transactionResponse.isSuccess()) {
-            System.out.println("result=" + transactionResponse.isSuccess());
-        } else {
-            System.out.println("exception=" + transactionResponse.getExecutionState().toString());
-        }
+        commit(txTemp,existUser);
     }
 
     private void registerRole(String roleName) {
@@ -477,7 +442,7 @@ public class SDKTest extends SDK_Base_Demo {
      * although signed by existUser, the operation of "txTemp.dataAccounts().register(...)" also can passed;
      * so you will use a new user to connect the gateway and signed by it. you can see the demo {@link SDKDemo_RegisterUser#checkPermission()}
      */
-    @Test
+//    @Test
     public void checkPermission() {
         String roleName = "ROLE-ADD-DATA";
         registerRole(roleName);
@@ -487,9 +452,9 @@ public class SDKTest extends SDK_Base_Demo {
 
     @Test
     public void insertDataByInvalidUsers() throws InterruptedException {
-        while(true){
+        for(int i=0;i<100;i++){
             this.insertDataByInvalidUser();
-            Thread.sleep(1000L);
+            Thread.sleep(100L);
         }
     }
 
@@ -514,34 +479,14 @@ public class SDKTest extends SDK_Base_Demo {
         txTemp.dataAccount(dataAccount.getAddress()).setText("key1", "value1", -1);
 //        txTemp.dataAccount(dataAccount.getAddress()).setText("key2", "闫石反馈内容测试", -1);
 //        //add some data for retrieve;
-//        this.strDataAccount = dataAccount.getAddress().toBase58();
+        this.strDataAccount = dataAccount.getAddress().toBase58();
         System.out.println("current dataAccount=" + dataAccount.getAddress());
-//        txTemp.dataAccount(dataAccount.getAddress()).setText("cc-fin01-01", "{\"dest\":\"KA001\",\"id\":\"cc-fin01-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN001\"}", -1);
-//        txTemp.dataAccount(dataAccount.getAddress()).setJSON("cc-fin02-01", "{\"dest\":\"KA001\",\"id\":\"cc-fin02-01\",\"items\":\"FIN002|2000\",\"source\":\"FIN002\"}", -1);
+        txTemp.dataAccount(dataAccount.getAddress()).setText("cc-fin01-01", "{\"dest\":\"KA001\",\"id\":\"cc-fin01-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN001\"}", -1);
+        txTemp.dataAccount(dataAccount.getAddress()).setJSON("cc-fin02-01", "{\"dest\":\"KA001\",\"id\":\"cc-fin02-01\",\"items\":\"FIN002|2000\",\"source\":\"FIN002\"}", -1);
 
         // TX 准备就绪
-        PreparedTransaction prepTx = txTemp.prepare();
-        if(signAdminKey!=null){
-            System.out.println("signAdminKey's pubKey = "+signAdminKey.getIdentity().getPubKey());
-            prepTx.sign(signAdminKey);
-        }else {
-            System.out.println("adminKey's pubKey = "+adminKey.getIdentity().getPubKey());
-            prepTx.sign(adminKey);
-        }
+        commit(txTemp,signAdminKey);
 
-
-        // 提交交易；
-        TransactionResponse transactionResponse = prepTx.commit();
-        if (transactionResponse.isSuccess()) {
-            System.out.println(String.format("height=%d, ###OK#, contentHash=%s, executionState=%s",
-                    transactionResponse.getBlockHeight(),
-                    transactionResponse.getContentHash(), transactionResponse.getExecutionState().toString()));
-            getData(dataAccount.getAddress().toBase58());
-        } else {
-            System.out.println(String.format("height=%d, ###exception#, contentHash=%s, executionState=%s",
-                    transactionResponse.getBlockHeight(),
-                    transactionResponse.getContentHash(), transactionResponse.getExecutionState().toString()));
-        }
     }
 
     @Test
@@ -556,21 +501,7 @@ public class SDKTest extends SDK_Base_Demo {
         txTemp.dataAccount(dataAccount.getAddress()).setText("key1", "value1", -1);
 
         // TX 准备就绪
-        PreparedTransaction prepTx = txTemp.prepare();
         BlockchainKeypair invalidUser= BlockchainKeyGenerator.getInstance().generate();
-        prepTx.sign(invalidUser);
-
-        // 提交交易；
-        TransactionResponse transactionResponse = prepTx.commit();
-        if (transactionResponse.isSuccess()) {
-            System.out.println(String.format("height=%d, ###OK#, contentHash=%s, executionState=%s",
-                    transactionResponse.getBlockHeight(),
-                    transactionResponse.getContentHash(), transactionResponse.getExecutionState().toString()));
-            getData(dataAccount.getAddress().toBase58());
-        } else {
-            System.out.println(String.format("height=%d, ###exception#, contentHash=%s, executionState=%s",
-                    transactionResponse.getBlockHeight(),
-                    transactionResponse.getContentHash(), transactionResponse.getExecutionState().toString()));
-        }
+        commit(txTemp, invalidUser);
     }
 }

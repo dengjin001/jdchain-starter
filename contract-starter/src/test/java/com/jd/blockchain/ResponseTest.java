@@ -5,6 +5,7 @@ import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
+import com.jd.blockchain.ledger.TransactionTemplate;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -105,21 +106,88 @@ public class ResponseTest extends SDKTest {
         service.shutdown();
     }
 
-    //7.使用相同的合约合约账户，单线程;
+    //7.相同的合约地址部署合约，单线程;
     @Test
     public void test_deployContract_reply(){
         BlockchainKeypair contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
-        this.contractHandle(null,null,contractDeployKey,true,false);
+        this.contractHandle(null,null,contractDeployKey,true,true);
         this.contractHandle(null,null,contractDeployKey,true,false);
     }
 
+    //8.相同的合约地址部署合约，多线程;
+    @Test
+    public void test_deployContract_reply_multiThread(){
+        //1. 提供指定线程数量的线程池；
+        ExecutorService service = Executors.newFixedThreadPool(10);
+        //2. 执行指定的线程的操作;
+        for(int i=0;i<10;i++){
+            service.submit(new ContractAccountThreadCall71());
+        }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        //3. 关闭连接池
+        service.shutdown();
+    }
 
+    //9.相同的合约重复执行;合约定义和执行严格定义;
+    @Test
+    public void test_executeContract_reply(){
+        BlockchainKeypair contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
+        this.contractHandle(null,null,contractDeployKey,true,true);
+        this.contractHandle(null,null,contractDeployKey,false,true);
+    }
 
-    //8.数据账户未注册，直接set;
+    //10.合约执行非合约定义mainClass对应的接口;
+    @Test
+    public void test_executeContract_differ(){
+        BlockchainKeypair contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
+        this.contractHandle("contract-JDChain-Contract-Error.jar",null,contractDeployKey,true,true);
+    }
 
+    //11.相同的合约执行;合约执行非合约定义mainClass对应的接口;
+    @Test
+    public void test_executeContract_reply_differ(){
+        BlockchainKeypair contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
+        this.contractHandle(null,null,contractDeployKey,true,true);
+        this.contractHandle(null,null,contractDeployKey,false,true);
+    }
+
+    //12.数据账户未注册，直接set;
+    @Test
+    public void insertDataByExistDataAccount() {
+        if (!isTest) return;
+        String dataAccount = "LdeNremWbMBmmn4hJkgYBqGqruMYE8iZqjeF5";
+        TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);
+
+        //add some data for retrieve;
+        System.out.println("current dataAccount=" + dataAccount);
+        txTemp.dataAccount(dataAccount).setText("cc-fin01-01",
+                "{\"dest\":\"KA001\",\"id\":\"cc-fin01-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN001\"}", -1);
+
+        // TX 准备就绪
+        commit(txTemp,adminKey);
+    }
+
+    //13.合约未发布，直接执行;
+    @Test
+    public void test_executeContract_noAddress(){
+        BlockchainKeypair contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
+        this.contractHandle(null,null,contractDeployKey,false,true);
+    }
+
+    //14.数据账户set相同版本；
+    @Test
+    public void test_insertData_same_version(){
+        BlockchainKeypair dataAccount = BlockchainKeyGenerator.getInstance().generate();
+        this.insertData(dataAccount,null);
+        TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);
+        txTemp.dataAccount(dataAccount.getAddress()).setText("key1","v1",-1);
+        commit(txTemp);
+    }
 }
-
-
 
 //===========inner Class============
 
@@ -162,6 +230,18 @@ class UserAccountThreadCall61 extends ResponseTest implements Callable {
         BlockchainKeypair userKey = BlockchainKeyGenerator.getInstance().generate();
         this.registerUser(null,userKey);
         this.registerUser(null,userKey);
+        return null;
+    }
+}
+
+// 7-1. 创建一个实现Callable的实现类，相同相同的合约地址部署合约;
+class ContractAccountThreadCall71 extends ResponseTest implements Callable {
+    // 2. 实现call方法；
+    @Override
+    public Object call() {
+        BlockchainKeypair contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
+        this.contractHandle(null,null,contractDeployKey,true,false);
+        this.contractHandle(null,null,contractDeployKey,true,false);
         return null;
     }
 }
