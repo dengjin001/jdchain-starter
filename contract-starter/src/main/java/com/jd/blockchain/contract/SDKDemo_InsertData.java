@@ -31,11 +31,7 @@ public class SDKDemo_InsertData extends SDK_Base_Demo{
 		txTemp.dataAccount(dataAccount.getAddress()).setText("cc-fin02-01","{\"dest\":\"KA001\",\"id\":\"cc-fin02-01\",\"items\":\"FIN002|2000\",\"source\":\"FIN002\"}",-1);
 
 		// TX 准备就绪
-		PreparedTransaction prepTx = txTemp.prepare();
-		prepTx.sign(adminKey);
-
-		// 提交交易；
-		prepTx.commit();
+		commit(txTemp);
 
 		getData(dataAccount.getAddress().toBase58());
 	}

@@ -1,11 +1,14 @@
 package com.jd.blockchain;
 
 import com.jd.blockchain.contract.SDK_Base_Demo;
-import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.*;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.sdk.converters.ClientResolveUtil;
 import com.jd.blockchain.transaction.GenericValueHolder;
 import com.jd.blockchain.utils.Bytes;
+import com.jd.blockchain.utils.codec.Base58Utils;
+import com.jd.blockchain.utils.io.ByteArray;
+import com.jd.blockchain.utils.security.ShaUtils;
 import com.jd.chain.contract.Guanghu;
 import org.junit.Before;
 import org.junit.Test;
@@ -171,48 +174,6 @@ public class SDKTest extends SDK_Base_Demo {
         this.contractHandle(null,null,null,true,true);
     }
 
-    public void contractHandle(String contractZipName, BlockchainKeypair signAdminKey, BlockchainKeypair contractDeployKey,
-                               boolean isDeploy, boolean isExecute) {
-        if(contractZipName == null){
-            contractZipName = "contract-JDChain-Contract.jar";
-        }
-        // 发布jar包
-        // 定义交易模板
-        TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
-        Bytes contractAddress = null;
-        if(isDeploy){
-            // 将jar包转换为二进制数据
-            byte[] contractCode = readChainCodes(contractZipName);
-
-            // 生成一个合约账号
-            if(contractDeployKey == null){
-                contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
-            }
-            contractAddress = contractDeployKey.getAddress();
-            System.out.println("contract's address=" + contractAddress);
-
-            // 生成发布合约操作
-            txTpl.contracts().deploy(contractDeployKey.getIdentity(), contractCode);
-
-            // 生成预发布交易；
-            commit(txTpl,signAdminKey);
-        }
-
-        if(isExecute){
-            // 注册一个数据账户
-            BlockchainKeypair dataAccount = createDataAccount();
-            // 获取数据账户地址x
-            String dataAddress = dataAccount.getAddress().toBase58();
-            // 打印数据账户地址
-            System.out.printf("DataAccountAddress = %s \r\n", dataAddress);
-
-            // 创建两个账号：
-            String account0 = "jd_zhangsan";
-            String content = "{\"dest\":\"KA006\",\"id\":\"cc-fin08-01\",\"items\":\"FIN001|3030\",\"source\":\"FIN001\"}";
-            System.out.println("return value = "+create(dataAddress, account0, content, contractAddress));
-        }
-    }
-
     //contract bifurcation
     @Test
     public void executeContractBifByHalf() {
@@ -286,25 +247,6 @@ public class SDKTest extends SDK_Base_Demo {
         String account0 = "jd_zhangsan";
         String content = "{\"dest\":\"KA006\",\"id\":\"cc-fin08-01\",\"items\":\"FIN001|3030\",\"source\":\"FIN001\"}";
         System.out.println("executeContractByHalf="+createBif(dataAddress, account0, content, contractAddress, isHalf));
-    }
-
-    private BlockchainKeypair createDataAccount() {
-        // 首先注册一个数据账户
-        BlockchainKeypair newDataAccount = BlockchainKeyGenerator.getInstance().generate();
-
-        TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
-        txTpl.dataAccounts().register(newDataAccount.getIdentity());
-        commit(txTpl);
-        return newDataAccount;
-    }
-
-    private String create(String address, String account, String content, Bytes contractAddress) {
-        TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
-        // 使用合约创建
-        Guanghu guanghu = txTpl.contract(contractAddress, Guanghu.class);
-        GenericValueHolder<String> result = decode(guanghu.putval(address, account, content));
-        commit(txTpl);
-        return result.get();
     }
 
     private String createBif(String address, String account, String content, Bytes contractAddress, String isHalf) {
@@ -503,5 +445,31 @@ public class SDKTest extends SDK_Base_Demo {
         // TX 准备就绪
         BlockchainKeypair invalidUser= BlockchainKeyGenerator.getInstance().generate();
         commit(txTemp, invalidUser);
+    }
+
+    /**
+     * 用类似keygen.sh方式生成一个新用户，注册至链上，然后使用其sign;
+     */
+    @Test
+    public void registerNewUserThenSign(){
+        //keygen.sh;
+        AsymmetricKeypair kp = Crypto.getSignatureFunction("ED25519").generateKeypair();
+        String base58PubKey = KeyGenUtils.encodePubKey(kp.getPubKey());
+        byte[] pwdBytes = ShaUtils.hash_256(ByteArray.fromString("abc", "UTF-8"));
+        String base58PwdKey = Base58Utils.encode(pwdBytes);
+        String base58PrivKey = KeyGenUtils.encodePrivKey(kp.getPrivKey(), pwdBytes);
+        System.out.println("pubKey="+base58PubKey);
+        System.out.println("privKey="+base58PrivKey);
+        System.out.println("base58PwdKey="+base58PwdKey);
+
+        //根据如上提供的公私钥，将此用户注册至链;
+        // 生成连接网关的账号
+        PrivKey privKey = KeyGenUtils.decodePrivKey(base58PrivKey, base58PwdKey);
+        PubKey pubKey = KeyGenUtils.decodePubKey(base58PubKey);
+        BlockchainKeypair newAdminKey = new BlockchainKeypair(pubKey, privKey);
+        //用原先网关的节点，将此newAdmin写入链;
+        registerUser(null,newAdminKey);
+        //用newAdmin签名;
+        registerUser(newAdminKey,null);
     }
 }

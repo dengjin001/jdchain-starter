@@ -9,10 +9,10 @@ import com.jd.chain.contract.TransferContract;
 import static com.jd.blockchain.contract.SDKDemo_Constant.readChainCodes;
 import static com.jd.blockchain.transaction.ContractReturnValue.decode;
 
-public class SDK_Contract_Demo extends SDK_Base_Demo {
+public class SDK_Contract_Guanghu_Demo extends SDK_Base_Demo {
 
 	public static void main(String[] args) {
-		new SDK_Contract_Demo().executeContract();
+		new SDK_Contract_Guanghu_Demo().executeContract();
 	}
 
 	public void executeContract() {

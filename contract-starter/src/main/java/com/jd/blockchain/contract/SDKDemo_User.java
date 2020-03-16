@@ -31,11 +31,7 @@ public class SDKDemo_User extends SDK_Base_Demo{
 		txTemp.users().register(user.getIdentity());
 
 		// TX 准备就绪；
-		PreparedTransaction prepTx = txTemp.prepare();
-		prepTx.sign(adminKey);
-
-		// 提交交易；
-		prepTx.commit();
+		commit(txTemp);
 		return user;
 	}
 }
