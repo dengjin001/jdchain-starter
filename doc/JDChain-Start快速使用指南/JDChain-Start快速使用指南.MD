@@ -337,9 +337,9 @@ if (kvDataEntries != null && kvDataEntries.length > 0) {
 
 #### 3.2.	编译
 
-编译工作在contract-compile工程中进行。在控制台中执行：mvn clean package来直接编译生成所需的合约压缩包。
+编译工作在contract-compile工程中进行。在控制台中执行：mvn clean verify来直接编译生成所需的合约压缩包。
 
-注意修改pom.xml文件中<filename>和<mainClass>这两个属性：
+注意修改pom.xml文件中\<**filename**>和\<**mainClass**>这两个属性：
 
 ```xml
 <plugin>
