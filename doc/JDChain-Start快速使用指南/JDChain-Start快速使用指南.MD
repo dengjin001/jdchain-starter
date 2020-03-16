@@ -13,7 +13,7 @@
 <dependency>
     <groupId>com.jd.blockchain</groupId>
     <artifactId>sdk-client</artifactId>
-    <version>1.1.2.RELEASE</version>
+    <version>1.1.3.RELEASE</version>
 </dependency>
 ```
 
@@ -23,7 +23,7 @@
 <dependency>
 	<groupId>com.jd.blockchain</groupId>
 	<artifactId>sdk-pack</artifactId>
-	<version>1.1.2.RELEASE</version>
+	<version>1.1.3.RELEASE</version>
 </dependency>
 ```
 
@@ -345,7 +345,7 @@ if (kvDataEntries != null && kvDataEntries.length > 0) {
 <plugin>
     <groupId>com.jd.blockchain</groupId>
     <artifactId>contract-maven-plugin</artifactId>
-    <version>1.1.0.RELEASE</version>
+    <version>1.1.3.RELEASE</version>
     <executions>
         <execution>
             <id>make-contract</id>
@@ -377,14 +377,12 @@ if (kvDataEntries != null && kvDataEntries.length > 0) {
 修改SDKDemo_Constant.java文件中对应的GW_IPADDR/GW_PORT/PUB_KEYS/PRIV_KEYS/PASSWORD为实际值；
 ```java
 public class SDKDemo_Constant {
-    public static final String GW_IPADDR = "127.0.0.1";
-    public static final int GW_PORT = 11000;
-    public static final String[] PUB_KEYS = {
-            "3snPdw7i7PjVKiTH2VnXZu5H8QmNaSXpnk4ei533jFpuifyjS5zzH9"};
-
-    public static final String[] PRIV_KEYS = {
-            "177gjzHTznYdPgWqZrH43W3yp37onm74wYXT4v9FukpCHBrhRysBBZh7Pzdo5AMRyQGJD7x"};
-    public static final String PASSWORD = "abc";
+        //localhost
+        public static final String GW_IPADDR = "localhost";
+        public static final int GW_PORT = 11000;
+        public static final String GW_PUB_KEY = "3snPdw7i7PjVKiTH2VnXZu5H8QmNaSXpnk4ei533jFpuifyjS5zzH9";
+        public static final String GW_PRIV_KEY = "177gjzHTznYdPgWqZrH43W3yp37onm74wYXT4v9FukpCHBrhRysBBZh7Pzdo5AMRyQGJD7x";
+        public static final String GW_PASSWORD = "DYu3G8aGTMBW1WrTw76zxQJQU4DHLw9MLyy7peG4LKkY";
 ```
 
 ##### 3.3.2.	发布并执行合约
