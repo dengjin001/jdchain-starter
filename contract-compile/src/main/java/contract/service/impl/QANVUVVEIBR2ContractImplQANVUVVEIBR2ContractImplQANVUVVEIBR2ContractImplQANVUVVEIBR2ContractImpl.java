@@ -15,7 +15,7 @@ import contract.service.QANVUVVEIBR2Contract;
  * Author cbc8df10-ab0b-4604-8d5b-0b7f57c5de0e
  * Date  2020-03-19 14:43:03
  */
-public class QANVUVVEIBR2ContractImpl implements EventProcessingAware, QANVUVVEIBR2Contract {
+public class QANVUVVEIBR2ContractImplQANVUVVEIBR2ContractImplQANVUVVEIBR2ContractImplQANVUVVEIBR2ContractImpl implements EventProcessingAware, QANVUVVEIBR2Contract {
 
      private ContractEventContext eventContext;
      private HashDigest ledgerHash;

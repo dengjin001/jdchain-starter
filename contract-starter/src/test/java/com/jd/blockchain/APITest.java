@@ -20,10 +20,11 @@ public class APITest {
 
     @Before
     public void setup(){
-        ipPort = "http://localhost:11000/";
-        ledgerHash = "j5jeQnyTopJWUP8pNs5vWUk9cFwfRYAzkjAB6DbRCcPdAn";
+//        ipPort = "http://localhost:11000/";
+        ipPort = "http://jdchain1-8081.jd.com:80/";
+        ledgerHash = "j5mfQ6A3NTXisVjsMD46uHrkj3puZJCTkgwjxNDVYV1UmA";
         //###注意###：每次新验证一个链时，contentHash会改变，需要同步修改;
-        contentHash = "j5vKnoiEDkpNVuhiw8crBVHZ5E6bWhrncc6ErWZP91d4bt";
+        contentHash = "j5tPAnGpbp9Fku2Py8LzUbKVTvfBPyvNpmVCvKrgnYNwJj";
 
 //        ipPort = "http://jdchain-cloud4-8080.jdfmgt.com/";
 //        ledgerHash = "j5s3Xx2djijUi7NewerfPtRTta3EAa9ErNcBsHgzkDND7g";

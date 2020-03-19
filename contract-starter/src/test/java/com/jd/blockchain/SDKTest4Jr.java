@@ -32,7 +32,7 @@ public class SDKTest4Jr extends SDK_Base_Demo {
 
     @Test
     public void executeContractJr() {
-        this.contractHandle1("contract-JDChain-Contract-jr.jar",null,null,true,true);
+        this.contractHandle1("contract-JDChain-Contract-long.jar",null,null,true,true);
     }
 
     public void contractHandle1(String contractZipName, BlockchainKeypair signAdminKey, BlockchainKeypair contractDeployKey,
