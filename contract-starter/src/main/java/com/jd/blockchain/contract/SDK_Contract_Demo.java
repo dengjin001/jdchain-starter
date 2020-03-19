@@ -87,7 +87,7 @@ public class SDK_Contract_Demo extends SDK_Base_Demo {
 		// 使用合约创建
 		TransferContract transferContract = txTpl.contract(contractAddress, TransferContract.class);
 		GenericValueHolder<String> result = decode(transferContract.readAll(address, account));
-		commit(txTpl);
+		commitA(txTpl);
 		return result.get();
 	}
 
@@ -96,7 +96,7 @@ public class SDK_Contract_Demo extends SDK_Base_Demo {
 		// 使用合约创建
 		TransferContract transferContract = txTpl.contract(contractAddress, TransferContract.class);
 		LongValueHolder result = decode(transferContract.read(address, account));
-		commit(txTpl);
+		commitA(txTpl);
 		return result.get();
 	}
 
@@ -117,7 +117,7 @@ public class SDK_Contract_Demo extends SDK_Base_Demo {
 		// 使用合约创建
 		TransferContract transferContract = txTpl.contract(contractAddress, TransferContract.class);
 		GenericValueHolder<String> result = decode(transferContract.transfer(address, from, to, money));
-		commit(txTpl);
+		commitA(txTpl);
 		return result.get();
 	}
 
@@ -127,12 +127,12 @@ public class SDK_Contract_Demo extends SDK_Base_Demo {
 			// 使用合约创建
 			TransferContract transferContract = txTpl.contract(contractAddress, TransferContract.class);
 			GenericValueHolder<String> result = decode(transferContract.create(address, account, money));
-			commit(txTpl);
+			commitA(txTpl);
 			return result.get();
 		} else {
 			// 通过KV创建
 			txTpl.dataAccount(address).setInt64(account, money, -1);
-			TransactionResponse txResp = commit(txTpl);
+			TransactionResponse txResp = commitA(txTpl);
 			return String.format(
 					"DataAccountAddress[%s] -> Create(By KV Operation) Account = %s and Money = %s Success!!! \r\n",
 					address, account, money);

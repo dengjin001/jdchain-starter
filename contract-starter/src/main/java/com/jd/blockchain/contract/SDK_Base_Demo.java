@@ -15,6 +15,7 @@ import static com.jd.blockchain.contract.SDKDemo_Constant.readChainCodes;
 import static com.jd.blockchain.transaction.ContractReturnValue.decode;
 
 public abstract class SDK_Base_Demo {
+    protected boolean useCommitA=true;
 
     protected BlockchainKeypair adminKey;
 
@@ -42,11 +43,86 @@ public abstract class SDK_Base_Demo {
         ledgerHash = ledgerHashs[0];
     }
 
+    /**
+     * 默认使用A方式commit;
+     * @param txTpl
+     * @return
+     */
     public TransactionResponse commit(TransactionTemplate txTpl) {
-        return this.commit(txTpl,null);
+        return this.commitA(txTpl,null);
     }
 
-    public TransactionResponse commit(TransactionTemplate txTpl, BlockchainKeypair signAdminKey) {
+    public TransactionResponse commitA(TransactionTemplate txTpl) {
+        return this.commitA(txTpl,null);
+    }
+
+    public TransactionResponse commitB(TransactionTemplate txTpl) {
+        return this.commitB(txTpl,null);
+    }
+
+    public TransactionResponse commit(TransactionTemplate txTpl, boolean useCommitA){
+        if(useCommitA){
+            return commitA(txTpl);
+        }else {
+            return commitB(txTpl);
+        }
+    }
+
+    /**
+     * 默认使用A方式commit;
+     * @param txTpl
+     * @param signAdminKey
+     * @return
+     */
+    public TransactionResponse commit(TransactionTemplate txTpl, BlockchainKeypair signAdminKey){
+        return commitA(txTpl, signAdminKey);
+    }
+
+    public TransactionResponse commit(TransactionTemplate txTpl, BlockchainKeypair signAdminKey, boolean useCommitA){
+        if(useCommitA){
+            return commitA(txTpl, signAdminKey);
+        }else {
+            return commitB(txTpl,signAdminKey);
+        }
+    }
+
+    /**
+     * 采用A方式提交；
+     * @param txTpl
+     * @param signAdminKey
+     * @return
+     */
+    public TransactionResponse commitA(TransactionTemplate txTpl, BlockchainKeypair signAdminKey) {
+        PreparedTransaction ptx = txTpl.prepare();
+
+        if(signAdminKey != null){
+            System.out.println("signAdminKey's pubKey = "+signAdminKey.getIdentity().getPubKey());
+            ptx.sign(signAdminKey);
+        }else {
+            System.out.println("adminKey's pubKey = "+adminKey.getIdentity().getPubKey());
+            ptx.sign(adminKey);
+        }
+        TransactionResponse transactionResponse = ptx.commit();
+
+        if (transactionResponse.isSuccess()) {
+            System.out.println(String.format("height=%d, ###OK#, contentHash=%s, executionState=%s",
+                    transactionResponse.getBlockHeight(),
+                    transactionResponse.getContentHash(), transactionResponse.getExecutionState().toString()));
+        } else {
+            System.out.println(String.format("height=%d, ###exception#, contentHash=%s, executionState=%s",
+                    transactionResponse.getBlockHeight(),
+                    transactionResponse.getContentHash(), transactionResponse.getExecutionState().toString()));
+        }
+        return transactionResponse;
+    }
+
+    /**
+     * 采用B方式提交（交易序列化）；
+     * @param txTpl
+     * @param signAdminKey
+     * @return
+     */
+    public TransactionResponse commitB(TransactionTemplate txTpl, BlockchainKeypair signAdminKey) {
         PreparedTransaction ptx = txTpl.prepare();
 
         //new code;
@@ -76,24 +152,18 @@ public abstract class SDK_Base_Demo {
         TransactionResponse transactionResponse = decodedPrepTx.commit();
         //====end====
 
-//        if(signAdminKey != null){
-//            System.out.println("signAdminKey's pubKey = "+signAdminKey.getIdentity().getPubKey());
-//            ptx.sign(signAdminKey);
-//        }else {
-//            System.out.println("adminKey's pubKey = "+adminKey.getIdentity().getPubKey());
-//            ptx.sign(adminKey);
-//        }
-//        TransactionResponse transactionResponse = ptx.commit();
-
         if (transactionResponse.isSuccess()) {
             System.out.println(String.format("height=%d, ###OK#, contentHash=%s, executionState=%s",
                     transactionResponse.getBlockHeight(),
                     transactionResponse.getContentHash(), transactionResponse.getExecutionState().toString()));
 
             // 操作结果对应于交易中的操作顺序；无返回结果的操作对应结果为 null;
-//            OperationResult opResult = transactionResponse.getOperationResults()[0];//
-//            Class<?> dataClazz = null;//返回值的类型；
-//            Object value = BytesValueEncoding.decode(opResult.getResult(), dataClazz);
+            if(transactionResponse.getOperationResults()!=null && transactionResponse.getOperationResults().length>0){
+                OperationResult opResult = transactionResponse.getOperationResults()[0];
+                Class<?> dataClazz = String.class;//返回值的类型；
+                Object value = BytesValueEncoding.decode(opResult.getResult(), dataClazz);
+                System.out.println("return value="+value);
+            }
         } else {
             System.out.println(String.format("height=%d, ###exception#, contentHash=%s, executionState=%s",
                     transactionResponse.getBlockHeight(),
@@ -118,7 +188,7 @@ public abstract class SDK_Base_Demo {
         System.out.println("user'address="+userKeypair.getAddress());
         txTemp.users().register(userKeypair.getIdentity());
         // TX 准备就绪；
-        commit(txTemp,signAdminKey);
+        commit(txTemp,signAdminKey,useCommitA);
         return userKeypair;
     }
 
@@ -135,7 +205,7 @@ public abstract class SDK_Base_Demo {
 
         TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
         txTpl.dataAccounts().register(newDataAccount.getIdentity());
-        commit(txTpl);
+        commitA(txTpl);
         return newDataAccount;
     }
 
@@ -163,7 +233,7 @@ public abstract class SDK_Base_Demo {
             txTpl.contracts().deploy(contractDeployKey.getIdentity(), contractCode);
 
             // 生成预发布交易；
-            commit(txTpl,signAdminKey);
+            commit(txTpl,signAdminKey,useCommitA);
         }
 
         if(isExecute){
@@ -177,16 +247,16 @@ public abstract class SDK_Base_Demo {
             // 创建两个账号：
             String account0 = "jd_zhangsan";
             String content = "{\"dest\":\"KA006\",\"id\":\"cc-fin08-01\",\"items\":\"FIN001|3030\",\"source\":\"FIN001\"}";
-            System.out.println("return value = "+create(dataAddress, account0, content, contractAddress));
+            System.out.println("return value = "+create1(dataAddress, account0, content, contractAddress));
         }
     }
 
-    public String create(String address, String account, String content, Bytes contractAddress) {
+    public String create1(String address, String account, String content, Bytes contractAddress) {
         TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
         // 使用合约创建
         Guanghu guanghu = txTpl.contract(contractAddress, Guanghu.class);
         GenericValueHolder<String> result = decode(guanghu.putval(address, account, content));
-        commit(txTpl);
+        commit(txTpl,useCommitA);
         return result.get();
     }
 }

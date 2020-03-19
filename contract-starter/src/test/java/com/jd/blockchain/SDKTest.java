@@ -48,7 +48,7 @@ public class SDKTest extends SDK_Base_Demo {
                 "</person>", -1);
 
         // TX 准备就绪
-        commit(txTemp,adminKey);
+        commitA(txTemp,adminKey);
 
         getData(strDataAccount);
     }
@@ -59,7 +59,8 @@ public class SDKTest extends SDK_Base_Demo {
     @Test
     public void insertDataByExistDataAccount() {
         if (!isTest) return;
-        this.strDataAccount = "LdeNremWbMBmmn4hJkgYBqGqruMYE8iZqjeF5";
+//        this.strDataAccount = "LdeNremWbMBmmn4hJkgYBqGqruMYE8iZqjeF5";
+        this.strDataAccount  = this.createDataAccount().getAddress().toBase58();
         TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);
 
         //add some data for retrieve;
@@ -82,7 +83,7 @@ public class SDKTest extends SDK_Base_Demo {
                 "{\"dest\":\"KA006\",\"id\":\"cc-fin08-01\",\"items\":\"FIN001|3030\",\"source\":\"FIN001\"}", -1);
 
         // TX 准备就绪
-        commit(txTemp,adminKey);
+        commitA(txTemp,adminKey);
 
         getData(strDataAccount);
     }
@@ -255,7 +256,7 @@ public class SDKTest extends SDK_Base_Demo {
         // 使用合约创建
         Guanghu guanghu = txTpl.contract(contractAddress, Guanghu.class);
         GenericValueHolder<String> result = decode(guanghu.putvalBifurcation(address, account, content, isHalf));
-        commit(txTpl);
+        commitA(txTpl);
         return result.get();
     }
 
@@ -288,7 +289,7 @@ public class SDKTest extends SDK_Base_Demo {
         System.out.println("user'id=" + user.getAddress());
         txTemp.users().register(user.getIdentity());
         // TX 准备就绪；
-        commit(txTemp,existUser);
+        commitA(txTemp,existUser);
     }
 
     /**
@@ -310,7 +311,7 @@ public class SDKTest extends SDK_Base_Demo {
         txTemp.dataAccount(dataAccount.getAddress()).setText("cc-fin01-01", "{\"dest\":\"KA001\",\"id\":\"cc-fin01-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN001\"}", -1);
 
         // TX 准备就绪
-        commit(txTemp,existUser);
+        commitA(txTemp,existUser);
     }
 
     private void registerRole(String roleName) {
@@ -428,7 +429,7 @@ public class SDKTest extends SDK_Base_Demo {
         txTemp.dataAccount(dataAccount.getAddress()).setJSON("cc-fin02-01", "{\"dest\":\"KA001\",\"id\":\"cc-fin02-01\",\"items\":\"FIN002|2000\",\"source\":\"FIN002\"}", -1);
 
         // TX 准备就绪
-        commit(txTemp,signAdminKey);
+        commit(txTemp,signAdminKey,useCommitA);
 
     }
 
@@ -445,7 +446,7 @@ public class SDKTest extends SDK_Base_Demo {
 
         // TX 准备就绪
         BlockchainKeypair invalidUser= BlockchainKeyGenerator.getInstance().generate();
-        commit(txTemp, invalidUser);
+        commitA(txTemp, invalidUser);
     }
 
     /**
@@ -472,5 +473,19 @@ public class SDKTest extends SDK_Base_Demo {
         registerUser(null,newAdminKey);
         //用newAdmin签名;
         registerUser(newAdminKey,null);
+    }
+
+    @Test
+    public void testSuit(){
+        useCommitA = true;
+        this.registerUserTest();
+        this.insertData();
+        this.executeContractOK();
+        useCommitA = false;
+        System.out.println("######userCommitA==false");
+        this.registerUserTest();
+        this.insertData();
+        this.executeContractOK();
+
     }
 }

@@ -1,15 +1,11 @@
 package com.jd.blockchain;
 
 import com.jd.blockchain.contract.SDK_Base_Demo;
-import com.jd.blockchain.crypto.*;
-import com.jd.blockchain.ledger.*;
-import com.jd.blockchain.sdk.converters.ClientResolveUtil;
+import com.jd.blockchain.ledger.BlockchainKeyGenerator;
+import com.jd.blockchain.ledger.BlockchainKeypair;
+import com.jd.blockchain.ledger.TransactionTemplate;
 import com.jd.blockchain.transaction.GenericValueHolder;
 import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.codec.Base58Utils;
-import com.jd.blockchain.utils.io.ByteArray;
-import com.jd.blockchain.utils.security.ShaUtils;
-import com.jd.chain.contract.Guanghu;
 import contract.service.QANVUVVEIBR2Contract;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +25,7 @@ public class SDKTest4Jr extends SDK_Base_Demo {
 
     @Before
     public void setup() {
+        useCommitA = false;
         existUser = BlockchainKeyGenerator.getInstance().generate();
     }
 
@@ -62,7 +59,7 @@ public class SDKTest4Jr extends SDK_Base_Demo {
             txTpl.contracts().deploy(contractDeployKey.getIdentity(), contractCode);
 
             // 生成预发布交易；
-            commit(txTpl,signAdminKey);
+            commit(txTpl,signAdminKey, false);
         }
 
         if(isExecute){
@@ -76,7 +73,8 @@ public class SDKTest4Jr extends SDK_Base_Demo {
             // 创建两个账号：
             String account0 = "jd_zhangsan";
             String content = "{\"dest\":\"KA006\",\"id\":\"cc-fin08-01\",\"items\":\"FIN001|3030\",\"source\":\"FIN001\"}";
-            System.out.println("return value = "+create1(dataAddress, account0, content, contractAddress));
+
+            System.out.println("old method, return value = "+create1(dataAddress, account0, content, contractAddress));
         }
     }
 
@@ -85,7 +83,7 @@ public class SDKTest4Jr extends SDK_Base_Demo {
         // 使用合约创建
         QANVUVVEIBR2Contract guanghu = txTpl.contract(contractAddress, QANVUVVEIBR2Contract.class);
         GenericValueHolder<String> result = decode(guanghu.writeQANVUVVEIBR2(address,"{\"userName\":\"vitty\",\"age\":10}"));
-        commit(txTpl);
+        commit(txTpl,useCommitA);
         return result.get();
     }
 }
