@@ -24,7 +24,7 @@ public class APITest {
         ipPort = "http://jdchain1-8081.jd.com:80/";
         ledgerHash = "j5mfQ6A3NTXisVjsMD46uHrkj3puZJCTkgwjxNDVYV1UmA";
         //###注意###：每次新验证一个链时，contentHash会改变，需要同步修改;
-        contentHash = "j5tPAnGpbp9Fku2Py8LzUbKVTvfBPyvNpmVCvKrgnYNwJj";
+        contentHash = "j5jgM2BAbPMLt6g5gDMGsN3fE6QVT6zMNkLu48VzsqwUvK";
 
 //        ipPort = "http://jdchain-cloud4-8080.jdfmgt.com/";
 //        ledgerHash = "j5s3Xx2djijUi7NewerfPtRTta3EAa9ErNcBsHgzkDND7g";
