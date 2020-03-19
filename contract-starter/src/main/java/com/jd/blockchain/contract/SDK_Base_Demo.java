@@ -1,13 +1,16 @@
 package com.jd.blockchain.contract;
 
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
 import com.jd.blockchain.transaction.GenericValueHolder;
+import com.jd.blockchain.transaction.SignatureUtils;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.chain.contract.Guanghu;
 
+import static com.jd.blockchain.contract.SDKDemo_Constant.peer1Key;
 import static com.jd.blockchain.contract.SDKDemo_Constant.readChainCodes;
 import static com.jd.blockchain.transaction.ContractReturnValue.decode;
 
@@ -45,18 +48,52 @@ public abstract class SDK_Base_Demo {
 
     public TransactionResponse commit(TransactionTemplate txTpl, BlockchainKeypair signAdminKey) {
         PreparedTransaction ptx = txTpl.prepare();
+
+        //new code;
+        // 序列化交易内容；
+        byte[] txContentBytes = BinaryProtocol.encode(ptx.getTransactionContent(), TransactionContent.class);
+
+        // 反序列化交易内容；
+        TransactionContent txContent = BinaryProtocol.decode(txContentBytes, TransactionContent.class);
+
+        // 对交易内容签名；
+        DigitalSignature signature1 = SignatureUtils.sign(txContent, peer1Key);
+
+        // 根据交易内容重新准备交易；
+        PreparedTransaction decodedPrepTx = blockchainService.prepareTransaction(txContent);
+
+        // 使用私钥进行签名，或附加签名；
+        decodedPrepTx.addSignature(signature1);
         if(signAdminKey != null){
             System.out.println("signAdminKey's pubKey = "+signAdminKey.getIdentity().getPubKey());
-            ptx.sign(signAdminKey);
+            decodedPrepTx.sign(signAdminKey);
         }else {
             System.out.println("adminKey's pubKey = "+adminKey.getIdentity().getPubKey());
-            ptx.sign(adminKey);
+            decodedPrepTx.sign(adminKey);
         }
-        TransactionResponse transactionResponse = ptx.commit();
+
+        // 提交交易；
+        TransactionResponse transactionResponse = decodedPrepTx.commit();
+        //====end====
+
+//        if(signAdminKey != null){
+//            System.out.println("signAdminKey's pubKey = "+signAdminKey.getIdentity().getPubKey());
+//            ptx.sign(signAdminKey);
+//        }else {
+//            System.out.println("adminKey's pubKey = "+adminKey.getIdentity().getPubKey());
+//            ptx.sign(adminKey);
+//        }
+//        TransactionResponse transactionResponse = ptx.commit();
+
         if (transactionResponse.isSuccess()) {
             System.out.println(String.format("height=%d, ###OK#, contentHash=%s, executionState=%s",
                     transactionResponse.getBlockHeight(),
                     transactionResponse.getContentHash(), transactionResponse.getExecutionState().toString()));
+
+            // 操作结果对应于交易中的操作顺序；无返回结果的操作对应结果为 null;
+//            OperationResult opResult = transactionResponse.getOperationResults()[0];//
+//            Class<?> dataClazz = null;//返回值的类型；
+//            Object value = BytesValueEncoding.decode(opResult.getResult(), dataClazz);
         } else {
             System.out.println(String.format("height=%d, ###exception#, contentHash=%s, executionState=%s",
                     transactionResponse.getBlockHeight(),

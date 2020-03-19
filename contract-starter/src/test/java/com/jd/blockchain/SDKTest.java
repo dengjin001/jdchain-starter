@@ -10,6 +10,7 @@ import com.jd.blockchain.utils.codec.Base58Utils;
 import com.jd.blockchain.utils.io.ByteArray;
 import com.jd.blockchain.utils.security.ShaUtils;
 import com.jd.chain.contract.Guanghu;
+import contract.service.QANVUVVEIBR2Contract;
 import org.junit.Before;
 import org.junit.Test;
 
