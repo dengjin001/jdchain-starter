@@ -10,6 +10,9 @@ master与最新的release分支保持一致。其它分支打tag。
 
 #修改说明：
 
+## 8.版本1.0.8.RELEASE说明
+1）样例基于JDChain1.1.8.RELEASE版本构建;
+
 ## 8.版本1.0.7.RELEASE说明
 1）样例基于JDChain1.1.3.RELEASE版本构建;
 
