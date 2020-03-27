@@ -1,5 +1,6 @@
-package com.jd.blockchain;
+package com.jd.blockchain.util;
 
+import com.jd.blockchain.SDKTest;
 import org.junit.Test;
 
 import java.util.concurrent.*;

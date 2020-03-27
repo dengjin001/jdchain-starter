@@ -20,16 +20,13 @@ public class APITest {
 
     @Before
     public void setup(){
-//        ipPort = "http://localhost:11000/";
-        ipPort = "http://jdchain1-8081.jd.com:80/";
-        ledgerHash = "j5mfQ6A3NTXisVjsMD46uHrkj3puZJCTkgwjxNDVYV1UmA";
-        //###注意###：每次新验证一个链时，contentHash会改变，需要同步修改;
-        contentHash = "j5jgM2BAbPMLt6g5gDMGsN3fE6QVT6zMNkLu48VzsqwUvK";
+        ipPort = "http://localhost:11000/";
+        ledgerHash = "j5jeQnyTopJWUP8pNs5vWUk9cFwfRYAzkjAB6DbRCcPdAn";
+//        ipPort = "http://jdchain1-8081.jd.com:80/";
+//        ledgerHash = "j5mfQ6A3NTXisVjsMD46uHrkj3puZJCTkgwjxNDVYV1UmA";
 
 //        ipPort = "http://jdchain-cloud4-8080.jdfmgt.com/";
 //        ledgerHash = "j5s3Xx2djijUi7NewerfPtRTta3EAa9ErNcBsHgzkDND7g";
-//          //###注意###：每次新验证一个链时，contentHash会改变，需要同步修改;
-//        contentHash = "j5s23NBMSP7UduMhVTcvzzswKWx6aaasyEHpBN1VD7ia1e";
 
         ipPortPlusLedgerHash = ipPort + "ledgers/"+ledgerHash;
 
@@ -85,6 +82,11 @@ public class APITest {
 
         System.out.println("4.5 获取指定哈希的区块的交易列表");
         postHandle(ipPortPlusLedgerHash+"/blocks/hash/"+blockHash+"/txs?fromIndex=0&count=-1");
+
+        //获得最新区块中的一个contentHash；
+        String latestTxs = postHandle(ipPortPlusLedgerHash+"/blocks/height/"+blockHeight+"/txs");
+        contentHash = JSONObject.parseObject(latestTxs).getJSONArray("data").getJSONObject(0).getJSONObject("transactionContent").getJSONObject("hash").getString("value");
+
 
         System.out.println("4.6 获取交易详细信息");
         postHandle(ipPortPlusLedgerHash+"/txs/hash/"+contentHash);

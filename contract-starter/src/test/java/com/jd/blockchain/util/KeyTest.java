@@ -1,4 +1,4 @@
-package com.jd.blockchain;
+package com.jd.blockchain.util;
 
 import com.jd.blockchain.crypto.*;
 import com.jd.blockchain.ledger.BlockchainKeypair;
