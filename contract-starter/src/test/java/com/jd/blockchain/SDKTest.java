@@ -1,10 +1,14 @@
 package com.jd.blockchain;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.jd.blockchain.contract.SDK_Base_Demo;
 import com.jd.blockchain.crypto.*;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.sdk.converters.ClientResolveUtil;
 import com.jd.blockchain.transaction.GenericValueHolder;
+import com.jd.blockchain.transaction.KVData;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.codec.Base58Utils;
 import com.jd.blockchain.utils.io.ByteArray;
@@ -12,6 +16,8 @@ import com.jd.blockchain.utils.security.ShaUtils;
 import com.jd.chain.contract.Guanghu;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.UnsupportedEncodingException;
 
 import static com.jd.blockchain.contract.SDKDemo_Constant.readChainCodes;
 import static com.jd.blockchain.transaction.ContractReturnValue.decode;
@@ -130,6 +136,29 @@ public class SDKTest extends SDK_Base_Demo {
                     // 操作类型：合约执行操作
                     else if (operation instanceof ContractEventSendOperation) {
                         ContractEventSendOperation ceso = (ContractEventSendOperation) operation;
+                        BytesValueList bytesValueList = ceso.getArgs();
+                        BytesValue[] bytesValueArr = bytesValueList.getValues();
+                        for(BytesValue bytesValue1 : bytesValueArr){
+                            if(bytesValue1 instanceof TypedValue){
+                                TypedValue typedValue = (TypedValue) bytesValue1;
+                                if("JSON".equals(typedValue.getType().toString())){
+                                    JSONArray jsonArray = JSON.parseObject(typedValue.stringValue()).getJSONArray("values");
+                                    for(int i=0 ; i< jsonArray.size(); i++ ){
+                                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                                        String realValBase58 = jsonObject.getJSONObject("bytes").getString("value");
+                                        String typeStr = jsonObject.getString("type");
+                                        DataType dataType = DataType.valueOf(typeStr);
+                                        BytesValue bytesValue = TypedValue.fromType(dataType, Base58Utils.decode(realValBase58));
+                                        try {
+                                            System.out.println("params,key="+typeStr+",value="+ new String(Base58Utils.decode(realValBase58),"utf-8"));
+                                        } catch (UnsupportedEncodingException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                     // 操作类型：KV存储操作
                     else if (operation instanceof DataAccountKVSetOperation) {
@@ -158,6 +187,9 @@ public class SDKTest extends SDK_Base_Demo {
 //		KVDataEntry[] kvData = blockchainService.getDataEntries(ledgerHash, commerceAccount, objKeys);
 
         // 获取数据账户下所有的KV列表
+        if(commerceAccount == null){
+            return;
+        }
         TypedKVEntry[] kvData = blockchainService.getDataEntries(ledgerHash, commerceAccount, 0, 100);
         if (kvData != null && kvData.length > 0) {
             for (TypedKVEntry kvDatum : kvData) {
@@ -485,6 +517,6 @@ public class SDKTest extends SDK_Base_Demo {
         this.registerUserTest();
         this.insertData();
         this.executeContractOK();
-
+        getData(null);
     }
 }
