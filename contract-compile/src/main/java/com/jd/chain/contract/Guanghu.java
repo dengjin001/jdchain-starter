@@ -10,6 +10,9 @@ public interface Guanghu {
     @ContractEvent(name = "putval")
     String putval(String address, String account, String content);
 
+    @ContractEvent(name = "putval1")
+    String putval(String address, String account, String content, Long time);
+
     @ContractEvent(name = "getval")
     String getval(String address, String account);
 
