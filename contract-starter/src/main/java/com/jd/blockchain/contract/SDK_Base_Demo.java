@@ -252,10 +252,12 @@ public abstract class SDK_Base_Demo {
     }
 
     public String create1(String address, String account, String content, Bytes contractAddress) {
+        System.out.println(String.format("params,String address=%s, String account=%s, String content=%s, Bytes contractAddress=%s",
+                address,account,content,contractAddress.toBase58()));
         TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
         // 使用合约创建
         Guanghu guanghu = txTpl.contract(contractAddress, Guanghu.class);
-        GenericValueHolder<String> result = decode(guanghu.putval(address, account, content));
+        GenericValueHolder<String> result = decode(guanghu.putval(address, account, content, System.currentTimeMillis()));
         commit(txTpl,useCommitA);
         return result.get();
     }
