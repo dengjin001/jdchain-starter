@@ -8,7 +8,6 @@ import com.jd.blockchain.crypto.*;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.sdk.converters.ClientResolveUtil;
 import com.jd.blockchain.transaction.GenericValueHolder;
-import com.jd.blockchain.transaction.KVData;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.codec.Base58Utils;
 import com.jd.blockchain.utils.io.ByteArray;
@@ -151,7 +150,12 @@ public class SDKTest extends SDK_Base_Demo {
                                         DataType dataType = DataType.valueOf(typeStr);
                                         BytesValue bytesValue = TypedValue.fromType(dataType, Base58Utils.decode(realValBase58));
                                         try {
-                                            System.out.println("params,key="+typeStr+",value="+ new String(Base58Utils.decode(realValBase58),"utf-8"));
+                                            if("INT64".equals(typeStr)){
+                                                long time = bytes2Long(Base58Utils.decode(realValBase58));
+                                                System.out.println("Long = "+time);
+                                            }else {
+                                                System.out.println("params,key="+typeStr+",value="+ new String(Base58Utils.decode(realValBase58),"utf-8"));
+                                            }
                                         } catch (UnsupportedEncodingException e) {
                                             e.printStackTrace();
                                         }
@@ -199,6 +203,15 @@ public class SDKTest extends SDK_Base_Demo {
                 System.out.println("kvData.value=" + kvDatum.getValue());
             }
         }
+    }
+
+    public static long bytes2Long(byte[] byteNum) {
+        long num = 0;
+        for (int ix = 0; ix < 8; ++ix) {
+            num <<= 8;
+            num |= (byteNum[ix] & 0xff);
+        }
+        return num;
     }
 
     @Test
