@@ -147,8 +147,6 @@ public class SDKTest extends SDK_Base_Demo {
 
                                         String realValBase58 = jsonObject.getJSONObject("bytes").getString("value");
                                         String typeStr = jsonObject.getString("type");
-                                        DataType dataType = DataType.valueOf(typeStr);
-                                        BytesValue bytesValue = TypedValue.fromType(dataType, Base58Utils.decode(realValBase58));
                                         try {
                                             if("INT64".equals(typeStr)){
                                                 long time = bytes2Long(Base58Utils.decode(realValBase58));
@@ -298,7 +296,7 @@ public class SDKTest extends SDK_Base_Demo {
     private String createBif(String address, String account, String content, Bytes contractAddress, String isHalf) {
         TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
         // 使用合约创建
-        Guanghu guanghu = txTpl.contract(contractAddress, Guanghu.class);
+        Guanghu guanghu = txTpl.contract(contractAddress, -1L, Guanghu.class);
         GenericValueHolder<String> result = decode(guanghu.putvalBifurcation(address, account, content, isHalf));
         commitA(txTpl);
         return result.get();
@@ -519,6 +517,17 @@ public class SDKTest extends SDK_Base_Demo {
         registerUser(newAdminKey,null);
     }
 
+    //check more vesion;
+    @Test
+    public void checkMoreVersion(){
+        useCommitA = true;;
+        BlockchainKeypair deployAddress = this.contractHandle(null,null,null,true,false);
+        System.out.println("deployAddress="+deployAddress.getAddress().toBase58());
+        for(int i=1;i<=3;i++){
+            this.contractHandle("contract-JDChain-Contract-"+i+".jar",null,deployAddress,true,true, i);
+        }
+    }
+
     @Test
     public void testSuit(){
         useCommitA = true;
@@ -530,6 +539,6 @@ public class SDKTest extends SDK_Base_Demo {
         this.registerUserTest();
         this.insertData();
         this.executeContractOK();
-        getData(null);
+//        getData(null);
     }
 }

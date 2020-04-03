@@ -85,7 +85,7 @@ public class SDK_Contract_Guanghu_Demo extends SDK_Base_Demo {
 	private String readAll(String address, String account, Bytes contractAddress) {
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
 		// 使用合约创建
-		TransferContract transferContract = txTpl.contract(contractAddress, TransferContract.class);
+		TransferContract transferContract = txTpl.contract(contractAddress, -1L, TransferContract.class);
 		GenericValueHolder<String> result = decode(transferContract.readAll(address, account));
 		commit(txTpl);
 		return result.get();
@@ -94,7 +94,7 @@ public class SDK_Contract_Guanghu_Demo extends SDK_Base_Demo {
 	private long readByContract(String address, String account, Bytes contractAddress) {
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
 		// 使用合约创建
-		TransferContract transferContract = txTpl.contract(contractAddress, TransferContract.class);
+		TransferContract transferContract = txTpl.contract(contractAddress, -1L, TransferContract.class);
 		LongValueHolder result = decode(transferContract.read(address, account));
 		commit(txTpl);
 		return result.get();
@@ -115,7 +115,7 @@ public class SDK_Contract_Guanghu_Demo extends SDK_Base_Demo {
 	private String transfer(String address, String from, String to, long money, Bytes contractAddress) {
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
 		// 使用合约创建
-		TransferContract transferContract = txTpl.contract(contractAddress, TransferContract.class);
+		TransferContract transferContract = txTpl.contract(contractAddress, -1L, TransferContract.class);
 		GenericValueHolder<String> result = decode(transferContract.transfer(address, from, to, money));
 		commit(txTpl);
 		return result.get();
@@ -125,7 +125,7 @@ public class SDK_Contract_Guanghu_Demo extends SDK_Base_Demo {
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
 		if (useContract) {
 			// 使用合约创建
-			TransferContract transferContract = txTpl.contract(contractAddress, TransferContract.class);
+			TransferContract transferContract = txTpl.contract(contractAddress, -1L, TransferContract.class);
 			GenericValueHolder<String> result = decode(transferContract.create(address, account, money));
 			commit(txTpl);
 			return result.get();

@@ -3,7 +3,10 @@ package com.jd.chain.contract;
 import com.jd.blockchain.contract.ContractEventContext;
 import com.jd.blockchain.contract.EventProcessingAware;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.TypedKVEntry;
+
+import java.util.Set;
 
 /*
  * 广互链码实现类 add by syf 2019.09.03
@@ -74,8 +77,20 @@ public class GuanghuImpl implements EventProcessingAware,Guanghu {
             eventContext.getLedger().dataAccount(address).setText(account,content,-1L);
         }
 
-        return String.format("DataAccountAddress[%s] -> Create(By Contract Operation) Account = %s and Money = %s  and time= %d Success!!! \r\n",
-                address, account, content, time);
+        StringBuffer stringBuffer = new StringBuffer();
+        if(eventContext == null){
+            return "eventContent is null";
+        }
+        if(eventContext.getTxSigners()== null || eventContext.getTxSigners().size()==0){
+            return "eventContext.getTxSigners() is empty";
+        }
+        for (BlockchainIdentity blockchainIdentity : eventContext.getTxSigners()){
+            stringBuffer.append(blockchainIdentity.getPubKey().toBase58()+" ");
+        }
+
+        return String.format("###contract3###,DataAccountAddress[%s] -> Create(By Contract Operation) " +
+                        "Account = %s and Money = %s  and time= %d Success!!! and signer's pub'sKey=%s \r\n",
+                address, account, content, time, stringBuffer.toString());
     }
 
     @Override

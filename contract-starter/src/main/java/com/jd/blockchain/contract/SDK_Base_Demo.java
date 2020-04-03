@@ -209,8 +209,13 @@ public abstract class SDK_Base_Demo {
         return newDataAccount;
     }
 
-    public void contractHandle(String contractZipName, BlockchainKeypair signAdminKey, BlockchainKeypair contractDeployKey,
+    public BlockchainKeypair contractHandle(String contractZipName, BlockchainKeypair signAdminKey, BlockchainKeypair contractDeployKey,
                                boolean isDeploy, boolean isExecute) {
+        return this.contractHandle(contractZipName,signAdminKey,contractDeployKey,isDeploy,isExecute,-1L);
+    }
+
+    public BlockchainKeypair contractHandle(String contractZipName, BlockchainKeypair signAdminKey, BlockchainKeypair contractDeployKey,
+                               boolean isDeploy, boolean isExecute, long version) {
         if(contractZipName == null){
             contractZipName = "contract-JDChain-Contract.jar";
         }
@@ -218,6 +223,10 @@ public abstract class SDK_Base_Demo {
         // 定义交易模板
         TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
         Bytes contractAddress = null;
+        if(contractDeployKey != null){
+            contractAddress = contractDeployKey.getAddress();
+        }
+
         if(isDeploy){
             // 将jar包转换为二进制数据
             byte[] contractCode = readChainCodes(contractZipName);
@@ -247,16 +256,17 @@ public abstract class SDK_Base_Demo {
             // 创建两个账号：
             String account0 = "jd_zhangsan";
             String content = "{\"dest\":\"KA006\",\"id\":\"cc-fin08-01\",\"items\":\"FIN001|3030\",\"source\":\"FIN001\"}";
-            System.out.println("return value = "+create1(dataAddress, account0, content, contractAddress));
+            System.out.println("return value = "+create1(dataAddress, account0, content, contractAddress, version));
         }
+        return contractDeployKey;
     }
 
-    public String create1(String address, String account, String content, Bytes contractAddress) {
+    public String create1(String address, String account, String content, Bytes contractAddress, long version) {
         System.out.println(String.format("params,String address=%s, String account=%s, String content=%s, Bytes contractAddress=%s",
                 address,account,content,contractAddress.toBase58()));
         TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
         // 使用合约创建
-        Guanghu guanghu = txTpl.contract(contractAddress, Guanghu.class);
+        Guanghu guanghu = txTpl.contract(contractAddress, version, Guanghu.class);
         GenericValueHolder<String> result = decode(guanghu.putval(address, account, content, System.currentTimeMillis()));
         commit(txTpl,useCommitA);
         return result.get();

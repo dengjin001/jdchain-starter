@@ -81,7 +81,7 @@ public class SDKTest4Jr extends SDK_Base_Demo {
     public String create1(String address, String account, String content, Bytes contractAddress) {
         TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
         // 使用合约创建
-        QANVUVVEIBR2Contract guanghu = txTpl.contract(contractAddress, QANVUVVEIBR2Contract.class);
+        QANVUVVEIBR2Contract guanghu = txTpl.contract(contractAddress, -1L, QANVUVVEIBR2Contract.class);
         GenericValueHolder<String> result = decode(guanghu.writeQANVUVVEIBR2(address,"{\"userName\":\"vitty\",\"age\":10}"));
         commit(txTpl,useCommitA);
         return result.get();
