@@ -14,7 +14,7 @@ import org.junit.Test;
  */
 public class PermissionTest extends SDK_Base_Demo {
     /**
-     * 新增加一个角色
+     * 新增加一个角色，不能操作合约；
      */
     @Test
     public void executeRoleConfig_sign() {
@@ -23,24 +23,6 @@ public class PermissionTest extends SDK_Base_Demo {
         txTpl.security().roles().configure("SIGN1")
                 .enable(LedgerPermission.APPROVE_TX, LedgerPermission.CONSENSUS_TX)
                 .disable(TransactionPermission.CONTRACT_OPERATION);
-        TransactionResponse txResp = commit(txTpl);
-        System.out.println(txResp.isSuccess());
-    }
-
-    /**
-     * 新增加一个角色
-     */
-    @Test
-    public void executeRoleConfig_cannot_registerUser() {
-        // 定义交易模板
-        TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
-        // 定义角色权限；
-        txTpl.security().roles().configure("NORMAL")
-                .enable(LedgerPermission.REGISTER_DATA_ACCOUNT)
-                .disable(LedgerPermission.REGISTER_USER)
-                .enable(TransactionPermission.DIRECT_OPERATION)
-                .enable(TransactionPermission.CONTRACT_OPERATION);
-
         TransactionResponse txResp = commit(txTpl);
         System.out.println(txResp.isSuccess());
     }
@@ -121,6 +103,23 @@ public class PermissionTest extends SDK_Base_Demo {
     }
 
 
+    /**
+     * 新增加一个角色，不能注册用户；
+     */
+    @Test
+    public void executeRoleConfig_cannot_registerUser() {
+        // 定义交易模板
+        TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
+        // 定义角色权限；
+        txTpl.security().roles().configure("NORMAL")
+                .enable(LedgerPermission.REGISTER_DATA_ACCOUNT)
+                .disable(LedgerPermission.REGISTER_USER)
+                .enable(TransactionPermission.DIRECT_OPERATION)
+                .enable(TransactionPermission.CONTRACT_OPERATION);
+
+        TransactionResponse txResp = commit(txTpl);
+        System.out.println(txResp.isSuccess());
+    }
 
     /**
      * 针对系统中已经注册的用户进行赋权;
@@ -132,14 +131,13 @@ public class PermissionTest extends SDK_Base_Demo {
 //        BlockchainKeypair user = BlockchainKeyGenerator.getInstance().generate();
         /**
          * 使用已知的用户构建一个keypair;
-         * pubKey=3snPdw7i7PjXU3qkPdRNRch974TDGbqim2Dm1GbJDuUYqfjyYUEfSU
-         * privkey=177gjyztVu92xSMda4FkhHfS6CvisvJ4nC9mSVscVsvAWN649Epy6yZ1PYYTZ4vaG1ByWZA
-         * pass=abc
+         pubKey=3snPdw7i7PaAqyDtL5Ewi5UDiShsjbawcG1N94uqHWFHqBcWCaDbEA
+         privKey=177gjtDNHiPSiKZuBYazTUWApinSQud1RYQCq3UMjd5mdL3JEFwn7vQwRH8CwYYzQzdDSHt
          */
 
-        PrivKey privKey = KeyGenUtils.decodePrivKeyWithRawPassword("177gjyztVu92xSMda4FkhHfS6CvisvJ4nC9mSVscVsvAWN649Epy6yZ1PYYTZ4vaG1ByWZA",
-                "abc");
-        PubKey pubKey = KeyGenUtils.decodePubKey("3snPdw7i7PjXU3qkPdRNRch974TDGbqim2Dm1GbJDuUYqfjyYUEfSU");
+        PrivKey privKey = KeyGenUtils.decodePrivKey("177gjtDNHiPSiKZuBYazTUWApinSQud1RYQCq3UMjd5mdL3JEFwn7vQwRH8CwYYzQzdDSHt",
+                "8EjkXVSTxMFjCvNNsTo8RBMDEVQmk7gYkW4SCDuvdsBG");
+        PubKey pubKey = KeyGenUtils.decodePubKey("3snPdw7i7PaAqyDtL5Ewi5UDiShsjbawcG1N94uqHWFHqBcWCaDbEA");
         BlockchainKeypair newUser = new BlockchainKeypair(pubKey, privKey);
         System.out.println("user'id="+newUser.getAddress());
         System.out.println("pubKey="+newUser.getPubKey().toBase58());
@@ -147,11 +145,7 @@ public class PermissionTest extends SDK_Base_Demo {
 
         txTemp.users().register(newUser.getIdentity());
 
-        // 定义角色权限；
-        txTemp.security().roles().configure("MANAGER")
-                .enable(LedgerPermission.REGISTER_USER, LedgerPermission.REGISTER_DATA_ACCOUNT)
-                .enable(TransactionPermission.CONTRACT_OPERATION);
-        txTemp.security().authorziations().forUser(newUser.getIdentity()).authorize("MANAGER");
+        txTemp.security().authorziations().forUser(newUser.getIdentity()).authorize("NORMAL");
 
         // TX 准备就绪；
         PreparedTransaction prepTx = txTemp.prepare();
@@ -159,5 +153,17 @@ public class PermissionTest extends SDK_Base_Demo {
 
         // 提交交易；
         prepTx.commit();
+    }
+
+    @Test
+    public void validPermissionByExistUser(){
+        // 在本地定义注册账号的 TX；
+        TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);
+        BlockchainKeypair user = BlockchainKeyGenerator.getInstance().generate();
+        System.out.println("user's address="+user.getAddress());
+        txTemp.users().register(user.getIdentity());
+
+        // TX 准备就绪；
+        commitA(txTemp,adminKey);
     }
 }

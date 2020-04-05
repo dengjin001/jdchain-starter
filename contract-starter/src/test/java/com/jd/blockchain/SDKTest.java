@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
 import static com.jd.blockchain.contract.SDKDemo_Constant.readChainCodes;
 import static com.jd.blockchain.transaction.ContractReturnValue.decode;
@@ -57,39 +58,21 @@ public class SDKTest extends SDK_Base_Demo {
         getData(strDataAccount);
     }
 
-    /**
-     * 根据已有的数据账户地址，添加数据;
-     */
-    @Test
-    public void insertDataByExistDataAccount() {
+    private void insertJsonData(String strDataAccount, Map<String, String> dataMap) {
         if (!isTest) return;
-//        this.strDataAccount = "LdeNremWbMBmmn4hJkgYBqGqruMYE8iZqjeF5";
         this.strDataAccount  = this.createDataAccount().getAddress().toBase58();
         TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);
 
         //add some data for retrieve;
         System.out.println("current dataAccount=" + this.strDataAccount);
-        txTemp.dataAccount(this.strDataAccount).setText("cc-fin01-01",
-                "{\"dest\":\"KA001\",\"id\":\"cc-fin01-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN001\"}", -1);
-        txTemp.dataAccount(this.strDataAccount).setText("cc-fin02-01",
-                "{\"dest\":\"KA001\",\"id\":\"cc-fin02-01\",\"items\":\"FIN002|2000\",\"source\":\"FIN002\"}", -1);
-        txTemp.dataAccount(this.strDataAccount).setText("cc-fin03-01",
-                "{\"dest\":\"KA001\",\"id\":\"cc-fin03-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN003\"}", -1);
-        txTemp.dataAccount(this.strDataAccount).setText("cc-fin04-01",
-                "{\"dest\":\"KA002\",\"id\":\"cc-fin04-01\",\"items\":\"FIN003|3000\",\"source\":\"FIN002\"}", -1);
-        txTemp.dataAccount(this.strDataAccount).setText("cc-fin05-01",
-                "{\"dest\":\"KA003\",\"id\":\"cc-fin05-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN001\"}", -1);
-        txTemp.dataAccount(this.strDataAccount).setText("cc-fin06-01",
-                "{\"dest\":\"KA004\",\"id\":\"cc-fin06-01\",\"items\":\"FIN002|2020\",\"source\":\"FIN001\"}", -1);
-        txTemp.dataAccount(this.strDataAccount).setText("cc-fin07-01",
-                "{\"dest\":\"KA005\",\"id\":\"cc-fin07-01\",\"items\":\"FIN001|5010\",\"source\":\"FIN001\"}", -1);
-        txTemp.dataAccount(this.strDataAccount).setText("cc-fin08-01",
-                "{\"dest\":\"KA006\",\"id\":\"cc-fin08-01\",\"items\":\"FIN001|3030\",\"source\":\"FIN001\"}", -1);
+        for (Map.Entry entry : dataMap.entrySet()){
+            txTemp.dataAccount(this.strDataAccount).setText(entry.getKey().toString(),entry.getValue().toString(), -1);
+        }
 
         // TX 准备就绪
         commitA(txTemp,adminKey);
 
-        getData(strDataAccount);
+//        getData(strDataAccount);
     }
 
     public void getData(String commerceAccount) {
@@ -444,16 +427,8 @@ public class SDKTest extends SDK_Base_Demo {
         }
     }
 
-    /**
-     * 生成一个区块链数据账户，并注册到区块链；
-     */
-    @Test
-    public void insertData() {
-        this.insertData(null,null);
-    }
-
-    public void insertData(BlockchainKeypair dataAccount, BlockchainKeypair signAdminKey) {
-        if (!isTest) return;
+    public String insertData(BlockchainKeypair dataAccount, BlockchainKeypair signAdminKey) {
+        if (!isTest) return "";
         // 在本地定义注册账号的 TX；
         TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);
         //采用KeyGenerator来生成BlockchainKeypair;
@@ -472,6 +447,7 @@ public class SDKTest extends SDK_Base_Demo {
 
         // TX 准备就绪
         commit(txTemp,signAdminKey,useCommitA);
+        return strDataAccount;
 
     }
 
@@ -515,6 +491,47 @@ public class SDKTest extends SDK_Base_Demo {
         registerUser(null,newAdminKey);
         //用newAdmin签名;
         registerUser(newAdminKey,null);
+    }
+
+    /**
+     * 生成一个区块链数据账户，并注册到区块链；
+     */
+    @Test
+    public void insertData() {
+        this.insertData(null,null);
+    }
+
+    /**
+     * 使用已有的数据账户来生成新的数据，验证穿透式检索;
+     */
+    @Test
+    public void insertDataByExistDataAccount() {
+        if (!isTest) return;
+//        this.strDataAccount  = this.createDataAccount().getAddress().toBase58();
+
+        this.strDataAccount = "LdeNtyqzgHWQny49SkdUDUaeWAj2ydg7Lw2Sk";
+
+        TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);
+
+        //add some data for retrieve;
+        System.out.println("current dataAccount=" + this.strDataAccount);
+//        txTemp.dataAccount(this.strDataAccount).setText("cc-fin03-01",
+//                "{\"dest\":\"KA001\",\"id\":\"cc-fin03-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN003\"}", -1);
+//        txTemp.dataAccount(this.strDataAccount).setText("cc-fin04-01",
+//                "{\"dest\":\"KA002\",\"id\":\"cc-fin04-01\",\"items\":\"FIN003|3000\",\"source\":\"FIN002\"}", -1);
+//        txTemp.dataAccount(this.strDataAccount).setText("cc-fin05-01",
+//                "{\"dest\":\"KA003\",\"id\":\"cc-fin05-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN001\"}", -1);
+//        txTemp.dataAccount(this.strDataAccount).setText("cc-fin06-01",
+//                "{\"dest\":\"KA004\",\"id\":\"cc-fin06-01\",\"items\":\"FIN002|2020\",\"source\":\"FIN001\"}", -1);
+//        txTemp.dataAccount(this.strDataAccount).setText("cc-fin07-01",
+//                "{\"dest\":\"KA005\",\"id\":\"cc-fin07-01\",\"items\":\"FIN001|5010\",\"source\":\"FIN001\"}", -1);
+//        txTemp.dataAccount(this.strDataAccount).setText("cc-fin08-01",
+//                "{\"dest\":\"KA006\",\"id\":\"cc-fin08-01\",\"items\":\"FIN001|3030\",\"source\":\"FIN001\"}", -1);
+        txTemp.dataAccount(this.strDataAccount).setText("cc-fin09-01",
+                "{\"dest\":\"KA001\",\"id\":\"cc-fin09-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN003\"}", -1);
+
+        // TX 准备就绪
+        commitA(txTemp,adminKey);
     }
 
     //check more vesion;

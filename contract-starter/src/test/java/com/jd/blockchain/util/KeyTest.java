@@ -49,7 +49,7 @@ public class KeyTest {
     public void keygenTest(){
         AsymmetricKeypair kp = Crypto.getSignatureFunction("ED25519").generateKeypair();
         String base58PubKey = KeyGenUtils.encodePubKey(kp.getPubKey());
-        byte[] pwdBytes = ShaUtils.hash_256(ByteArray.fromString("abc", "UTF-8"));
+        byte[] pwdBytes = ShaUtils.hash_256(ByteArray.fromString("1", "UTF-8"));
         String base58PwdKey = Base58Utils.encode(pwdBytes);
         String base58PrivKey = KeyGenUtils.encodePrivKey(kp.getPrivKey(), pwdBytes);
         System.out.println("pubKey="+base58PubKey);
