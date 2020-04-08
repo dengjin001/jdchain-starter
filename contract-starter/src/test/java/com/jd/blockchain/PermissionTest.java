@@ -131,13 +131,14 @@ public class PermissionTest extends SDK_Base_Demo {
 //        BlockchainKeypair user = BlockchainKeyGenerator.getInstance().generate();
         /**
          * 使用已知的用户构建一个keypair;
-         pubKey=3snPdw7i7PaAqyDtL5Ewi5UDiShsjbawcG1N94uqHWFHqBcWCaDbEA
-         privKey=177gjtDNHiPSiKZuBYazTUWApinSQud1RYQCq3UMjd5mdL3JEFwn7vQwRH8CwYYzQzdDSHt
+         pubKey=3snPdw7i7PdktosF4iYd7dSeumq6hpLnwtrRCLQWkpdpntMxABvJdZ
+         privKey=177gjzfkJHt8BMxDM44Zik1KKr9bpxQXyBdy7cS4wJqFGyrnyPhqApaKpYqcka3NMJJ1M5V
+         base58PwdKey=8EjkXVSTxMFjCvNNsTo8RBMDEVQmk7gYkW4SCDuvdsBG
          */
 
-        PrivKey privKey = KeyGenUtils.decodePrivKey("177gjtDNHiPSiKZuBYazTUWApinSQud1RYQCq3UMjd5mdL3JEFwn7vQwRH8CwYYzQzdDSHt",
+        PrivKey privKey = KeyGenUtils.decodePrivKey("177gjzfkJHt8BMxDM44Zik1KKr9bpxQXyBdy7cS4wJqFGyrnyPhqApaKpYqcka3NMJJ1M5V",
                 "8EjkXVSTxMFjCvNNsTo8RBMDEVQmk7gYkW4SCDuvdsBG");
-        PubKey pubKey = KeyGenUtils.decodePubKey("3snPdw7i7PaAqyDtL5Ewi5UDiShsjbawcG1N94uqHWFHqBcWCaDbEA");
+        PubKey pubKey = KeyGenUtils.decodePubKey("3snPdw7i7PdktosF4iYd7dSeumq6hpLnwtrRCLQWkpdpntMxABvJdZ");
         BlockchainKeypair newUser = new BlockchainKeypair(pubKey, privKey);
         System.out.println("user'id="+newUser.getAddress());
         System.out.println("pubKey="+newUser.getPubKey().toBase58());
@@ -145,7 +146,7 @@ public class PermissionTest extends SDK_Base_Demo {
 
         txTemp.users().register(newUser.getIdentity());
 
-        txTemp.security().authorziations().forUser(newUser.getIdentity()).authorize("NORMAL");
+        txTemp.security().authorziations().forUser(newUser.getIdentity()).authorize("NORMAL8");
 
         // TX 准备就绪；
         PreparedTransaction prepTx = txTemp.prepare();

@@ -285,14 +285,6 @@ public class SDKTest extends SDK_Base_Demo {
         return result.get();
     }
 
-    /**
-     * 生成一个区块链用户，并注册到区块链；
-     */
-    @Test
-    public void registerUserTest() {
-        this.registerUser();
-    }
-
     @Test
     public void rigisterUserMore() {
         for (int i = 0; i < 15; i++) {
@@ -494,6 +486,14 @@ public class SDKTest extends SDK_Base_Demo {
     }
 
     /**
+     * 生成一个区块链用户，并注册到区块链；
+     */
+    @Test
+    public void registerUserTest() {
+        this.registerUser();
+    }
+
+    /**
      * 生成一个区块链数据账户，并注册到区块链；
      */
     @Test
@@ -509,27 +509,18 @@ public class SDKTest extends SDK_Base_Demo {
         if (!isTest) return;
 //        this.strDataAccount  = this.createDataAccount().getAddress().toBase58();
 
-        this.strDataAccount = "LdeNtyqzgHWQny49SkdUDUaeWAj2ydg7Lw2Sk";
+        this.strDataAccount = "LdeNjrn5m6p7JLPX6gfhiKE43S5UqzfeFpN47";
 
         TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);
 
         //add some data for retrieve;
         System.out.println("current dataAccount=" + this.strDataAccount);
-//        txTemp.dataAccount(this.strDataAccount).setText("cc-fin03-01",
-//                "{\"dest\":\"KA001\",\"id\":\"cc-fin03-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN003\"}", -1);
-//        txTemp.dataAccount(this.strDataAccount).setText("cc-fin04-01",
-//                "{\"dest\":\"KA002\",\"id\":\"cc-fin04-01\",\"items\":\"FIN003|3000\",\"source\":\"FIN002\"}", -1);
-//        txTemp.dataAccount(this.strDataAccount).setText("cc-fin05-01",
-//                "{\"dest\":\"KA003\",\"id\":\"cc-fin05-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN001\"}", -1);
-//        txTemp.dataAccount(this.strDataAccount).setText("cc-fin06-01",
-//                "{\"dest\":\"KA004\",\"id\":\"cc-fin06-01\",\"items\":\"FIN002|2020\",\"source\":\"FIN001\"}", -1);
-//        txTemp.dataAccount(this.strDataAccount).setText("cc-fin07-01",
-//                "{\"dest\":\"KA005\",\"id\":\"cc-fin07-01\",\"items\":\"FIN001|5010\",\"source\":\"FIN001\"}", -1);
-//        txTemp.dataAccount(this.strDataAccount).setText("cc-fin08-01",
-//                "{\"dest\":\"KA006\",\"id\":\"cc-fin08-01\",\"items\":\"FIN001|3030\",\"source\":\"FIN001\"}", -1);
-        txTemp.dataAccount(this.strDataAccount).setText("cc-fin09-01",
-                "{\"dest\":\"KA001\",\"id\":\"cc-fin09-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN003\"}", -1);
-
+        txTemp.dataAccount(this.strDataAccount).setText("cc-fin03-01",
+                "{\"dest\":\"KA001\",\"id\":\"cc-fin03-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN003\"}", -1);
+        txTemp.dataAccount(this.strDataAccount).setText("cc-fin04-01",
+                "{\"dest\":\"KA001\",\"id\":\"cc-fin04-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN003\"}", -1);
+        txTemp.dataAccount(this.strDataAccount).setText("cc-fin05-01",
+                "{\"dest\":\"KA001\",\"id\":\"cc-fin05-01\",\"items\":\"FIN001|5000\",\"source\":\"FIN003\"}", -1);
         // TX 准备就绪
         commitA(txTemp,adminKey);
     }

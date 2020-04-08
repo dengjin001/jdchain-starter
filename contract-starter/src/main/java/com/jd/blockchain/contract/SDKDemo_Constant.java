@@ -39,9 +39,9 @@ public class SDKDemo_Constant {
     public static String GW_PASSWORD = "8EjkXVSTxMFjCvNNsTo8RBMDEVQmk7gYkW4SCDuvdsBG";
 
     //use new user to link gw;
-//    public static String GW_PUB_KEY[] = {"3snPdw7i7PaAqyDtL5Ewi5UDiShsjbawcG1N94uqHWFHqBcWCaDbEA",
+//    public static String GW_PUB_KEY[] = {"3snPdw7i7PdktosF4iYd7dSeumq6hpLnwtrRCLQWkpdpntMxABvJdZ",
 //            "3snPdw7i7Pf8eJ1uycdAM6spw7XjbST7m39MZbD9qdL4QEzoBAwLKh"};
-//    public static String GW_PRIV_KEY[] = {"177gjtDNHiPSiKZuBYazTUWApinSQud1RYQCq3UMjd5mdL3JEFwn7vQwRH8CwYYzQzdDSHt",
+//    public static String GW_PRIV_KEY[] = {"177gjzfkJHt8BMxDM44Zik1KKr9bpxQXyBdy7cS4wJqFGyrnyPhqApaKpYqcka3NMJJ1M5V",
 //            "177gjyFk3VDzfExR1a5NxHvSGqS9FJ2aNAaqMgNyTUrRguMA9jN6Bp3vasUB7wXr1cqcDdj"};
 
     public static PrivKey gwPrivkey0 = KeyGenUtils.decodePrivKey(GW_PRIV_KEY[0], GW_PASSWORD);
