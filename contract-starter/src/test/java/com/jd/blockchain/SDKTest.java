@@ -530,6 +530,6 @@ public class SDKTest extends SDK_Base_Demo {
         this.registerUserTest();
         this.insertData();
         this.executeContractOK();
-        getData(null);
+//        getData(null);
     }
 }
