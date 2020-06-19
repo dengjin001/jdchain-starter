@@ -5,14 +5,14 @@
     <parent>
         <artifactId>jdchain-starter</artifactId>
         <groupId>com.jd.blockchain</groupId>
-        <version>1.0.8.RELEASE</version>
+        <version>1.1.2.RELEASE</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>contract-compile</artifactId>
 
     <properties>
-        <mainClass>com.jd.chain.contract.GuanghuImpl</mainClass>
+        <mainClass>com.jd.chain.contract.MyTransferContractImpl</mainClass>
         <!--<mvnHome>E:\apache-maven-3.5.0\</mvnHome>-->
     </properties>
 
